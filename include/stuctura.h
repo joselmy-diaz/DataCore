@@ -6,7 +6,7 @@
 #include "DataCore.h"
 
 typedef struct {
-    Obj obj;
+    ObjR obj;
     int length;
     Entry **entries;
 } ObjTebleH;
@@ -22,13 +22,13 @@ typedef struct NodeEntry {
 
 
 typedef struct {
-    Obj obj;
+    ObjR obj;
     struct NodeEntry* root;
 } ObjTree;
 
 
 typedef struct {
-    Obj obj;
+    ObjR obj;
     Obj** array;
     size_t length;
     int8_t free;
@@ -56,7 +56,6 @@ bool insertL(ObjCon* objL, Obj* data);
 int getziseL(ObjCon* objL);
 bool insertLByKey(ObjCon* objL, Entry data);
 Obj* searchL(ObjCon *objL, int index);
-Obj* NewFunction(int index, ObjCon *objL);
 Obj* searchLByKey(ObjCon* objL, const char* key);
 bool freeArray(ObjCon* objL);
 

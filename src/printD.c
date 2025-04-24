@@ -26,18 +26,24 @@ void printData (Obj* obj) {
         return;
     }
     ObjString* obtS;
+    Nativo* obtO;
     switch (obj->type) {
         case TYPE_NULL:
             printf("%s%s", RED, "NULL");
             break;
-        case TYPE_BOOL:
-            printf("%s%s", MAGENTA, obj->as.Bool ? "true" : "false");
+        case TYPE_BOOL_F:
+            printf("%s%s", MAGENTA, "false");
+            break;
+        case TYPE_BOOL_T:
+            printf("%s%s", MAGENTA, "true");
             break;
         case TYPE_NUM:
-            printf("%s%d", RED, obj->as.Num);
+            obtO = (ObjR*)obj;
+            printf("%s%d", RED, obtO->as.Num);
             break;
         case TYPE_NUMFL:
-            printf("%s%f", RED, obj->as.NumF);
+            obtO = (ObjR*)obj;
+            printf("%s%f", RED, obtO->as.NumF);
             break;
         case OBJ_STRING:
             obtS = (ObjString*)obj;

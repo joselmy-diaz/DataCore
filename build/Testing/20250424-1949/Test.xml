@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="(empty)"
+	BuildStamp="20250424-1949-Experimental"
+	Name="(empty)"
+	Generator="ctest-4.0.1"
+	CompilerName=""
+	CompilerVersion=""
+	OSName="Linux"
+	Hostname="JoselmyPc"
+	OSRelease="6.14.3-arch1-1"
+	OSVersion="#1 SMP PREEMPT_DYNAMIC Sun, 20 Apr 2025 12:38:52 +0000"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="186"
+	ModelName="13th Gen Intel(R) Core(TM) i7-1360P"
+	ProcessorCacheSize="18432"
+	NumberOfLogicalCPU="16"
+	NumberOfPhysicalCPU="12"
+	TotalVirtualMemory="20479"
+	TotalPhysicalMemory="15701"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="2336.56"
+	>
+	<Testing>
+		<StartDateTime>Apr 24 20:54 UTC</StartDateTime>
+		<StartTestTime>1745528094</StartTestTime>
+		<TestList/>
+		<EndDateTime>Apr 24 20:54 UTC</EndDateTime>
+		<EndTestTime>1745528094</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>

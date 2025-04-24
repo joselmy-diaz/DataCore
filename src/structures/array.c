@@ -4,7 +4,7 @@
 Obj* initList(int size, bool isTree) {
     ObjCon* objL = malloc(sizeof(ObjCon));
     objL->obj.type = OBJ_ARRAY;
-    objL->obj.as.Num = 0;
+    objL->obj.reference = 0;
     objL->length = size;
     objL->free = size;
     objL->array = (Obj**)calloc(size, sizeof(Obj*));

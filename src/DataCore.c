@@ -1,41 +1,11 @@
 #include "./DataCore.h"
 #include "stuctura.h"
 
-//================ Función para inicializar un nuevo objeto ==================
-// de tipo Obj con un valor específico
-Obj* newData(ObjType type, As as) {
-    Obj *obj = (Obj *)malloc(sizeof(Obj));
-    if (obj == NULL) {
-        return NULL;
-    }
-    obj->type = type;
-    obj->as = as;
-    return obj;
-}
-
-// Función para inicializar el valor de un objeto de clave valor
-Entry initEntry(const char* key, Obj* data) {
-    Entry entry;
-    entry.key = key;
-    entry.data = data;
-    return entry;
-}
-
-Obj* newObjString (char * str) {
-    ObjString *valueObj = (ObjString*)malloc(sizeof(ObjString));
-    valueObj->obj.as.Num = 0;
-    valueObj->obj.type = OBJ_STRING;
-    valueObj->length = strlen(str);
-    valueObj->chars = (char*)malloc(strlen(str) + 1);
-    strcpy(valueObj->chars, str);
-    return valueObj;
-}
-
-
 //======================== Función para balidar el uso de un objeto =======================
 bool isNative(Obj* obj) {
     if (obj->type == TYPE_NULL) return true;
-    if (obj->type == TYPE_BOOL) return true;
+    if (obj->type == TYPE_BOOL_F) return true;
+    if (obj->type == TYPE_BOOL_T) return true;
     if (obj->type == TYPE_NUM) return true;
     if (obj->type == TYPE_NUMFL) return true;
     return false;
@@ -86,10 +56,12 @@ bool insertD(Obj* obj, Entry data) {
 bool assignData(Obj** obj, Obj* data) {
     if (obj == NULL || data == NULL) return false;
     if (isObj(data)) {
-        data->as.Num++;
-        *obj = data;
+        ObjR* objT = (ObjR*)data;
+        objT->reference++;
+        *obj = objT;
     } else {
-        *obj = newData(data->type, data->as);
+        Nativo* objT = (Nativo*)data;
+        *obj = newObj(data->type, &objT->as);
     }
     return true;
 }
@@ -129,8 +101,9 @@ bool freeObjs(Obj* obj) {
         res = true;
     } else {
         if(isObj(obj)){
-            if (obj->as.Num <= 1){
-                switch (obj->type){
+            ObjR* objT = (ObjR*)obj;
+            if (objT->reference <= 1){
+                switch (objT->type){
                     case OBJ_STRING:
                         printf(". Listo para liberas.");
                         free((ObjString*)obj);
@@ -148,7 +121,7 @@ bool freeObjs(Obj* obj) {
                         printf("Estructura no encontrada para liberas.");
                         break;
                 }
-            } else obj->as.Num--;
+            } else objT->reference--;
         } else printf("Estructura no encontrada para liberas.");
     }
     return res;

@@ -18,7 +18,7 @@ int max(int a, int b) {
 Obj* initTR() {
     ObjTree* objT = (ObjTree*)malloc(sizeof(ObjTree));
     objT->obj.type = OBJ_AVL_TREE;
-    objT->obj.as.Num = 0;
+    objT->obj.reference = 0;
     objT->root = NULL;
     return &objT->obj;
 }

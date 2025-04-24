@@ -1,0 +1,50 @@
+[
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o CMakeFiles/DataCore.dir/src/printD.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/src/printD.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/src/printD.c",
+  "output": "CMakeFiles/DataCore.dir/src/printD.c.o"
+},
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o CMakeFiles/DataCore.dir/src/hast.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/src/hast.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/src/hast.c",
+  "output": "CMakeFiles/DataCore.dir/src/hast.c.o"
+},
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o CMakeFiles/DataCore.dir/src/DataCore.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/src/DataCore.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/src/DataCore.c",
+  "output": "CMakeFiles/DataCore.dir/src/DataCore.c.o"
+},
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o CMakeFiles/DataCore.dir/src/structures/main.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/main.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/main.c",
+  "output": "CMakeFiles/DataCore.dir/src/structures/main.c.o"
+},
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o CMakeFiles/DataCore.dir/src/structures/tablaH.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/tablaH.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/tablaH.c",
+  "output": "CMakeFiles/DataCore.dir/src/structures/tablaH.c.o"
+},
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o CMakeFiles/DataCore.dir/src/structures/treeH.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/treeH.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/treeH.c",
+  "output": "CMakeFiles/DataCore.dir/src/structures/treeH.c.o"
+},
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o CMakeFiles/DataCore.dir/src/structures/array.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/array.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/src/structures/array.c",
+  "output": "CMakeFiles/DataCore.dir/src/structures/array.c.o"
+},
+{
+  "directory": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/build",
+  "command": "clang -I/home/joselmy/Desktop/Kintsugi/kit/DataCore/./include -g -o test/CMakeFiles/testDataCore.dir/DataCoreT.c.o -c /home/joselmy/Desktop/Kintsugi/kit/DataCore/test/DataCoreT.c",
+  "file": "/home/joselmy/Desktop/Kintsugi/kit/DataCore/test/DataCoreT.c",
+  "output": "test/CMakeFiles/testDataCore.dir/DataCoreT.c.o"
+}
+]

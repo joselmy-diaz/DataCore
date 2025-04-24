@@ -1,10 +1,6 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "obj.h"
 // #include "stuctura.h"
 
@@ -15,9 +11,9 @@ typedef struct Entry {
     struct Entry *next;
 } Entry;
 
-Obj* newData(ObjType type, As as);
+Obj* newObj(ObjType type, void* as);
 Obj* newObjString(char * str);
-Entry initEntry(const char* key, Obj* data);
+Entry newEntry(const char* key, Obj* data);
 
 bool assignData(Obj** obj, Obj* data);
 void printData(Obj* data);

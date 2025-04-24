@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.10)
 project(DataCore)
 
 # Establecer Clang como el compilador
-# set(CMAKE_C_COMPILER "clang")
-# set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_C_COMPILER "clang")
+set(CMAKE_CXX_COMPILER "clang++")
 
 
 # # Añadir opciones de compilación y enlace para -pg
@@ -18,9 +18,10 @@ set(SERVER_SOURCE
     ./src/printD.c
     ./src/hast.c 
     ./src/DataCore.c
-    ./src/tablaH.c 
-    ./src/treeH.c
-    ./src/array.c
+    ./src/structures/main.c 
+    ./src/structures/tablaH.c 
+    ./src/structures/treeH.c
+    ./src/structures/array.c
 )
 
 # Crear la biblioteca
@@ -28,3 +29,6 @@ add_library(${PROJECT_NAME} STATIC ${SERVER_SOURCE})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ./include)
 
+# Configuración de pruebas
+enable_testing()
+add_subdirectory(test)
