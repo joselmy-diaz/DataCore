@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/cmake_install.cmake",
-		"/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/test/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

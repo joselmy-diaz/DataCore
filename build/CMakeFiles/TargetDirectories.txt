@@ -1,8 +1,0 @@
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/CMakeFiles/DataCore.dir
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/CMakeFiles/test.dir
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/CMakeFiles/edit_cache.dir
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/CMakeFiles/rebuild_cache.dir
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/test/CMakeFiles/testDataCore.dir
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/test/CMakeFiles/test.dir
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/test/CMakeFiles/edit_cache.dir
-/home/joselmy/Desktop/Kintsugi/kit/DataCore/build/test/CMakeFiles/rebuild_cache.dir
