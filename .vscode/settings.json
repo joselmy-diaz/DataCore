@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.docx": "openxml",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "span": "c",
+        "any": "c",
+        "complex": "c",
+        "ranges": "c",
+        "vector": "c",
+        "chrono": "c",
+        "variant": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

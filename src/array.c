@@ -1,0 +1,95 @@
+#include "stuctura.h"
+
+// Inicializa la lista
+Obj* initList(int size, bool isTree) {
+    ObjCon* objL = malloc(sizeof(ObjCon));
+    objL->obj.type = OBJ_ARRAY;
+    objL->obj.as.Num = 0;
+    objL->length = size;
+    objL->free = size;
+    objL->array = (Obj**)calloc(size, sizeof(Obj*));
+    for(int i = 0; i < size; i++) {
+        objL->array[i] = NULL;
+    }
+    if (isTree) {
+        objL->array[0] = initTR();
+        objL->free--;
+    }
+    return &objL->obj;
+}
+
+// is TreeL or table Hash
+bool isTreeOrTable(ObjCon* objL) {
+    if (objL == NULL || 1 > (objL->length - objL->free)) return false;
+    Obj* data1 = objL->array[0];
+    if (objL->array[0] != NULL) {
+        if (((Obj*)objL->array[0])->type == OBJ_AVL_TREE) return true;
+        else if (((Obj*)objL->array[0])->type == OBJ_HASH_TABLE) return true;
+    }
+    return false;
+}
+
+
+// Inserta un elemento en la lista
+bool insertLByKey(ObjCon* objL, Entry data) {
+    if (1 <= objL->length - objL->free) {
+        if (isTreeOrTable(objL)) {
+            Obj* data1 = objL->array[0];
+            return insertD(data1, data);
+        } else printf("No se puede insectar en este tipo de estructura 2");
+    } else return false;
+}
+
+// Inserta un elemento en la lista
+bool insertL(ObjCon* objL, Obj* data) {
+    if (objL->free > 0) {
+        size_t index = objL->length - objL->free;
+        assignData(&objL->array[index], data);
+        objL->free--;
+        return true;
+    } else {
+        size_t oldLength = objL->length;
+        objL->length += 5;
+
+        Obj** temp = realloc(objL->array, objL->length * sizeof(Obj*));
+        if (temp == NULL)  return false;  // Falló realloc → no toques objL
+
+        objL->array = temp;
+        objL->free = 4;  // Uno será usado ya mismo
+
+        assignData(&objL->array[oldLength], data);
+        return true;
+    }
+}
+// Busca un elemento en la lista
+Obj* searchL(ObjCon* objL, int index) {
+    if (objL == NULL) return NULL;
+    if (index <= objL->length - objL->free) {
+        return objL->array[index + (isTreeOrTable(objL) ? 1 : 0)];
+    } else return NULL;
+}
+
+// Busca un elemento en la lista por una key
+Obj* searchLByKey (ObjCon* objL, const char* key) {
+    Obj* RData = NULL;
+    if (objL->array != NULL) {
+        Obj* data1 = objL->array[0];
+        if (isTreeOrTable(objL)) RData = searchD(data1, key);
+        else printf("No se puede buscar en este tipo de estructura");
+    }
+    return RData;
+}
+
+int getziseL(ObjCon* objL) {
+    return (objL->length - objL->free) - (isTreeOrTable(objL) ? 1 : 0);
+}
+
+// Libera la memoria de la lista
+bool freeArray(ObjCon* objL) {
+    for (int i = 0; i < objL->length - objL->free; i++) {
+        if(objL->array[i] != NULL) freeObjs(objL->array[i]);
+    }
+    free(objL->array);
+    free(objL);
+    return true;
+}
