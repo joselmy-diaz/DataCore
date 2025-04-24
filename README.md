@@ -1,5 +1,7 @@
 # DataCore
 
+## Descripción
+
 **DataCore** es un módulo diseñado para gestionar estructuras de datos dinámicas en el proyecto Kintsugi. Proporciona una interfaz para trabajar con diferentes tipos de estructuras como tablas hash, árboles AVL, arreglos y cadenas de texto. Este módulo está optimizado para manejar datos de manera eficiente y flexible, permitiendo su inserción, búsqueda, y liberación de memoria.
 
 ## Utilidad
