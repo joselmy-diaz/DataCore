@@ -1,7 +1,7 @@
 #ifndef DATA_OBJ_H
 #define DATA_OBJ_H
 
-// #include <stddef.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -43,7 +43,8 @@ typedef struct {
 
 typedef struct {
   ObjR obj;
-  int length;
+  size_t length;
+  size_t capacity;
   char* chars;
 } ObjString;
 

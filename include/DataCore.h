@@ -6,17 +6,15 @@
 
 
 typedef struct Entry {
-    Obj* data;
     char *key;
+    Obj* data;
     struct Entry *next;
 } Entry;
 
-Obj* newObj(ObjType type, void* as);
-Obj* newObjString(char * str);
-Entry newEntry(const char* key, Obj* data);
 
 bool assignData(Obj** obj, Obj* data);
-void printData(Obj* data);
+void printObjf(Obj* data);
+void printObj (Obj* obj);
 
 bool insertD(Obj* obj, Entry data);
 Obj* searchD(Obj* obj, const char *key);

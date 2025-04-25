@@ -1,5 +1,6 @@
 #include "obj.h"
 #include "DataCore.h"
+#include "stuctura.h"
 #include <stdio.h>
 
 
@@ -20,13 +21,27 @@
 #define BOLD    "\x1b[1m"
 #define RESET   "\x1b[0m"
 
-void printData (Obj* obj) {
-    if (obj == NULL) {
-        printf("%s%s", RED, "NULL");
-        return;
+
+char* printEn(Entry* entry){
+    printf("%s:", entry->key);
+    printObj(entry->data);
+    return NULL;
+}
+
+void recorrerNodo(NodeEntry* nodo) {
+    if (nodo == NULL) return;
+
+    // Primero el subárbol izquierdo
+    recorrerNodo(nodo->left);
+
+    if (nodo->data != NULL) {
+        printEn(nodo);
+        printf("%s ,", WHITE);
     }
-    ObjString* obtS;
-    Nativo* obtO;
+    recorrerNodo(nodo->right);
+}
+
+void printObj (Obj* obj){
     switch (obj->type) {
         case TYPE_NULL:
             printf("%s%s", RED, "NULL");
@@ -37,29 +52,51 @@ void printData (Obj* obj) {
         case TYPE_BOOL_T:
             printf("%s%s", MAGENTA, "true");
             break;
-        case TYPE_NUM:
-            obtO = (ObjR*)obj;
+        case TYPE_NUM: {
+            Nativo* obtO = (Nativo*)obj;
             printf("%s%d", RED, obtO->as.Num);
             break;
-        case TYPE_NUMFL:
-            obtO = (ObjR*)obj;
+        }
+        case TYPE_NUMFL: {
+            Nativo* obtO = (Nativo*)obj;
             printf("%s%f", RED, obtO->as.NumF);
             break;
-        case OBJ_STRING:
-            obtS = (ObjString*)obj;
-            printf("%s%s", YELLOW, obtS->chars);
+        }
+        case OBJ_STRING: {
+            printf("%s%s", YELLOW, getString(obj));
             break;
+        }
         case OBJ_ARRAY:
+            printf("%s[", WHITE);
+            for (int i = 0; i < getziseL(obj); i++) {
+                printObj(searchL(obj, i));
+                if (i < getziseL(obj) - 1) printf("%s, ", WHITE);
+            }
+            printf("%s]", WHITE);
+            break;
         case OBJ_HASH_TABLE:
-            printf("%s%s", BLUE, "Tabla Hash");
+            printf("%s%s", BLUE, "Hash Table");
             break;
         case OBJ_AVL_TREE:
-            printf("%s%s", BLUE, "Arbol AVL");
+            printf("%s{", WHITE);
+            recorrerNodo( ((ObjTree*)obj)->root);
+            printf("%s}", WHITE);
             break;
         case OBJ_FUNCTION:
-            printf("%s%s", GREEN, "Objeto");
+            printf("%s%s", GREEN, "<Function Object>");
+            break;
+        default:
+            printf("%s%s", GRAY, "<Unknown Type>");
             break;
     }
+}
+
+void printObjf (Obj* obj) {
+    if (obj == NULL) {
+        printf("%s%s", RED, "NULL");
+        return;
+    }
+    printObj(obj);
     printf("\n%s", WHITE);
 }
 

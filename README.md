@@ -97,17 +97,10 @@ for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
 }
 
 // Imprimir valores en el árbol AVL
-for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-    printf("Valor de '%s': ", entries[i].key);
-    printData(searchD(tree, entries[i].key));
-}
+printObjf(dataTree);
 
 // Imprimir valores en la lista
-for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-    printf("Valor de '%s': ", entries[i].key);
-    Obj* dataO = searchD(lis, entries[i].key);
-    printData(dataO);
-}
+printObjf(lis);
 ```
 
 ### 6. Liberación de Memoria

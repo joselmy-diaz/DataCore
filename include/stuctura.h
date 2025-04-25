@@ -5,6 +5,7 @@
 #include <string.h>
 #include "DataCore.h"
 
+
 typedef struct {
     ObjR obj;
     int length;
@@ -36,6 +37,11 @@ typedef struct {
 
 
 unsigned int hash(const char *key);
+
+Obj* newObj(ObjType type, void* as);
+Obj* newObjString(char * str);
+Entry newEntry(const char* key, Obj* data);
+char* getString(Obj* obj);
 
 void freeEn (Entry* entry);
 

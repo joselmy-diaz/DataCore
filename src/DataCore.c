@@ -105,7 +105,6 @@ bool freeObjs(Obj* obj) {
             if (objT->reference <= 1){
                 switch (objT->type){
                     case OBJ_STRING:
-                        printf(". Listo para liberas.");
                         free((ObjString*)obj);
                         break;
                     case OBJ_HASH_TABLE:

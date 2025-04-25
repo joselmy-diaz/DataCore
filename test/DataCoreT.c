@@ -88,7 +88,7 @@ int main(int argc, char const *argv[]) {
     printf("\nInsertando en la lista...\n");
     start = clock();
     for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-        insertD(lis, entries[i]);
+        insertL(lis, entries[i].data);
     }
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -98,23 +98,25 @@ int main(int argc, char const *argv[]) {
     printf("\nValores en la tabla:\n");
     for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
         printf("Valor de '%s': ", entries[i].key);
-        printData(searchD(table, entries[i].key));
+        printObjf(searchD(table, entries[i].key));
     }
 
     // Imprimir valores en el árbol AVL
     printf("\nValores en el árbol AVL:\n");
-    for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-        printf("Valor de '%s': ", entries[i].key);
-        printData(searchD(tree, entries[i].key));
-    }
+    printObj(tree);
+    // for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
+    //     printf("Valor de '%s': ", entries[i].key);
+    //     printData(searchD(tree, entries[i].key));
+    // }
 
     // Imprimir valores en la lista
     printf("\nValores en la lista:\n");
-    for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-        printf("Valor de '%s': ", entries[i].key);
-        Obj* dataO = searchD(lis, entries[i].key);
-        printData(dataO);
-    }
+    printObjf(lis);
+    // for (int i = 0; i < getziseL(lis); i++) {
+    //     printf("Valor de '%s': ", entries[i].key);
+    //     Obj* dataO = searchL(lis, i);
+    //     printData(dataO);
+    // }
     
 
     // Liberar memoria

@@ -42,3 +42,8 @@ Obj* newObjString (char * str) {
     strcpy(valueObj->chars, str);
     return valueObj;
 }
+
+char* getString(Obj* obj) {
+    ObjString* obtS = (ObjString*)obj;
+    return obtS->chars;
+}
