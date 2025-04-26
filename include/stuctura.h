@@ -59,7 +59,7 @@ Obj* searchTree(ObjTree* obj, const char *key);
 void preOrder(NodeEntry *root);
 bool freeTR(ObjTree* objT);
 
-Obj* initList(int size, bool isTree);
+Obj *initList(int size, bool isTree);
 bool insertL(ObjCon* objL, Obj* data);
 int getziseL(ObjCon* objL);
 bool insertLByKey(ObjCon* objL, Entry data);

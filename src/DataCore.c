@@ -19,8 +19,6 @@ bool isObjD(Obj* obj) {
 // verifica si es una estructura de tipo Obj
 bool isObj(Obj* obj) {
     if (isObjD(obj)) return true;
-    if (obj->type == TYPE_BOOL_F) return true;
-    if (obj->type == TYPE_BOOL_T) return true;
     if (obj->type == OBJ_STRING) return true;
     if (obj->type == TYPE_ENTRY) return true;
     return false;
@@ -67,10 +65,10 @@ bool assignData(Obj** obj, Obj* data) {
     return true;
 }
 
+
 // Busca un elemento en la lista
 Obj* searchD (Obj* obj, const char *key) {
     if (obj == NULL) return NULL;
-    if (key == NULL) return NULL;
     Obj* RData = NULL;
     if (obj->type == OBJ_HASH_TABLE) {
         RData = searchTH(obj, key);
@@ -96,7 +94,10 @@ Obj* searchDIndex (Obj* obj, int index) {
 
 bool freeObjs(Obj* obj) {
     if (obj == NULL) return true;
-
+    if (obj->type == TYPE_BOOL_F || obj->type == TYPE_BOOL_T) {
+        free(obj);
+        return true;
+    }
     // Si es un objeto nativo, simplemente libera
     if (isNative(obj)) {
         free((Nativo*)obj);
@@ -105,7 +106,6 @@ bool freeObjs(Obj* obj) {
 
     // Asegúrate de que es un objeto válido
     if (!isObj(obj)) return false;
-
     ObjR* objT = (ObjR*)obj;
 
     // Si tiene referencias activas, solo reduce el contador
@@ -119,7 +119,8 @@ bool freeObjs(Obj* obj) {
         case TYPE_ENTRY: {
             Entry* ent = (Entry*)obj;
             if (ent->key) free(ent->key);
-            if (ent->next) freeObjs((Obj*)ent->next);  // usar recursión si next es otro objeto
+            if (ent->data) freeObjs(ent->data);  // liberar el objeto de datos
+            if (ent->next) freeObjs(ent->next);  // liberar el siguiente objeto
             free(ent);
             return true;
         }

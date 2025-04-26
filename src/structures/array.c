@@ -88,11 +88,7 @@ int getziseL(ObjCon* objL) {
 // Libera la memoria de la lista
 bool freeArray(ObjCon* objL) {
     if (objL == NULL) return false;
-    if (isTreeOrTable(objL)) {
-        Obj* data1 = objL->array[0];
-        freeObjs(data1);
-    }
-    for (int i = (isTreeOrTable(objL) ? 1 : 0); i < objL->length - objL->free; i++) {
+    for (int i = 0; i < objL->length - objL->free; i++) {
         if(objL->array[i] != NULL) freeObjs(objL->array[i]);
     }
     free(objL->array);
