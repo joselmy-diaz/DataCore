@@ -17,10 +17,14 @@ int max(int a, int b) {
 
 Obj* initTR() {
     ObjTree* objT = (ObjTree*)malloc(sizeof(ObjTree));
+    if (objT == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     objT->obj.type = OBJ_AVL_TREE;
     objT->obj.reference = 0;
     objT->root = NULL;
-    return &objT->obj;
+    return (Obj*)objT;
 }
 
 // Rotación derecha
@@ -51,9 +55,7 @@ NodeEntry *leftRotate(NodeEntry *x) {
     return y;
 }
 
-
-// Función para insertar un nodo en el árbol AVL
-NodeEntry* insertAVL(NodeEntry* node, Entry data) {
+NodeEntry* insertAVLH(NodeEntry* node, Entry data, int reHash) {
     if (node == NULL)  {
         NodeEntry* newNode = (NodeEntry*)malloc(sizeof(NodeEntry));
         newNode->key = strdup(data.key);
@@ -64,12 +66,11 @@ NodeEntry* insertAVL(NodeEntry* node, Entry data) {
         return newNode;
     }
 
-    int reHash = hash(data.key);
     int hashNode = hash(node->key);
     if (reHash < hashNode)
-        node->left = insertAVL(node->left, data);
+        node->left = insertAVLH(node->left, data, reHash);
     else if (reHash > hashNode)
-        node->right = insertAVL(node->right, data);
+        node->right = insertAVLH(node->right, data, reHash);
     else
         return node;
 
@@ -102,6 +103,12 @@ NodeEntry* insertAVL(NodeEntry* node, Entry data) {
     }
 
     return node;
+}
+
+// Función para insertar un nodo en el árbol AVL
+NodeEntry* insertAVL(NodeEntry* node, Entry data) {
+    int reHash = hash(data.key);
+    return insertAVLH(node, data, reHash);
 }
 
 NodeEntry* searchTreeN(NodeEntry* node, int Hkey){
@@ -149,8 +156,10 @@ void freeNode(NodeEntry* node) {
 
 // Función para liberar memoria del árbol AVL
 bool freeTR(ObjTree* objT) {
-    if (objT ->root == NULL) return true;
-    freeNode(objT->root);
+    if (objT->root != NULL) {
+        freeNode(objT->root);
+    }
     free(objT);
+    objT = NULL;
     return true;
 }

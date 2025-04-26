@@ -4,8 +4,6 @@
 //======================== Función para balidar el uso de un objeto =======================
 bool isNative(Obj* obj) {
     if (obj->type == TYPE_NULL) return true;
-    if (obj->type == TYPE_BOOL_F) return true;
-    if (obj->type == TYPE_BOOL_T) return true;
     if (obj->type == TYPE_NUM) return true;
     if (obj->type == TYPE_NUMFL) return true;
     return false;
@@ -21,7 +19,10 @@ bool isObjD(Obj* obj) {
 // verifica si es una estructura de tipo Obj
 bool isObj(Obj* obj) {
     if (isObjD(obj)) return true;
+    if (obj->type == TYPE_BOOL_F) return true;
+    if (obj->type == TYPE_BOOL_T) return true;
     if (obj->type == OBJ_STRING) return true;
+    if (obj->type == TYPE_ENTRY) return true;
     return false;
 }
 
@@ -43,7 +44,7 @@ bool insertD(Obj* obj, Entry data) {
         case OBJ_ARRAY: {
             ObjCon* objT = (ObjCon*)obj;
             if (data.key == NULL) 
-                return insertL(objT, &data.data);
+                return insertL(objT, &data);
             else 
                 return insertLByKey(objT, data);
         }
@@ -94,34 +95,47 @@ Obj* searchDIndex (Obj* obj, int index) {
 
 
 bool freeObjs(Obj* obj) {
-    bool res = false;
-    if (obj == NULL) return res;
+    if (obj == NULL) return true;
+
+    // Si es un objeto nativo, simplemente libera
     if (isNative(obj)) {
-        free(obj);
-        res = true;
-    } else {
-        if(isObj(obj)){
-            ObjR* objT = (ObjR*)obj;
-            if (objT->reference <= 1){
-                switch (objT->type){
-                    case OBJ_STRING:
-                        free((ObjString*)obj);
-                        break;
-                    case OBJ_HASH_TABLE:
-                        res = freeTH((ObjTebleH*)obj);
-                        break;
-                    case OBJ_AVL_TREE:
-                        res = freeTR((ObjTree*)obj);
-                    break;
-                    case OBJ_ARRAY:
-                        res = freeArray((ObjCon*)obj);
-                    break;
-                    default:
-                        printf("Estructura no encontrada para liberas.");
-                        break;
-                }
-            } else objT->reference--;
-        } else printf("Estructura no encontrada para liberas.");
+        free((Nativo*)obj);
+        return true;
     }
-    return res;
+
+    // Asegúrate de que es un objeto válido
+    if (!isObj(obj)) return false;
+
+    ObjR* objT = (ObjR*)obj;
+
+    // Si tiene referencias activas, solo reduce el contador
+    if (objT->reference > 0) {
+        objT->reference--;
+        return true;
+    }
+
+    // Ahora libera según el tipo del objeto
+    switch (objT->type) {
+        case TYPE_ENTRY: {
+            Entry* ent = (Entry*)obj;
+            if (ent->key) free(ent->key);
+            if (ent->next) freeObjs((Obj*)ent->next);  // usar recursión si next es otro objeto
+            free(ent);
+            return true;
+        }
+        case OBJ_STRING: {
+            ObjString* objS = (ObjString*)obj;
+            if (objS->chars) free(objS->chars);
+            free(objS);
+            return true;
+        }
+        case OBJ_HASH_TABLE:
+            return freeTH((ObjTebleH*)obj);
+        case OBJ_AVL_TREE:
+            return freeTR((ObjTree*)obj);
+        case OBJ_ARRAY:
+            return freeArray((ObjCon*)obj);
+        default:
+            return false;
+    }
 }

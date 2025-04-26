@@ -14,6 +14,7 @@ typedef struct {
 
 // Estructura del nodo del árbol AVL
 typedef struct NodeEntry {
+    ObjR obj;
     char *key;
     Obj* data;
     struct NodeEntry* left;
@@ -38,9 +39,9 @@ typedef struct {
 
 unsigned int hash(const char *key);
 
-Obj* newObj(ObjType type, void* as);
+Obj* newObj(ObjType type, As* as);
 Obj* newObjString(char * str);
-Entry newEntry(const char* key, Obj* data);
+Entry* newEntry(const char* key, Obj* data);
 char* getString(Obj* obj);
 
 void freeEn (Entry* entry);
@@ -50,7 +51,8 @@ Obj* searchTH(ObjTebleH *table, const char *key);
 void insertTH(ObjTebleH *table, Entry data);
 bool freeTH(ObjTebleH *table);
 
-Obj* initTR();
+Obj *initTR();
+Obj *NewFunction();
 NodeEntry* insertAVL(NodeEntry* node, Entry data);
 NodeEntry* newNode(Entry data);
 Obj* searchTree(ObjTree* obj, const char *key);

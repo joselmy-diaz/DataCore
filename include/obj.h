@@ -14,11 +14,12 @@ enum {
   TYPE_BOOL_T = 2,
   TYPE_NUM       = 3,
   TYPE_NUMFL     = 5,
+  TYPE_ENTRY      = 11,
   OBJ_STRING     = 6,
   OBJ_HASH_TABLE = 7,
   OBJ_AVL_TREE   = 8,
   OBJ_ARRAY      = 9,
-  OBJ_FUNCTION   = 10
+  OBJ_FUNCTION   = 10,
 };
 
 typedef struct {

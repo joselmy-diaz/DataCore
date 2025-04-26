@@ -1,4 +1,5 @@
 #include "stuctura.h"
+#include "DataCore.h"
 
 // Inicializa la lista
 Obj* initList(int size, bool isTree) {
@@ -22,9 +23,9 @@ Obj* initList(int size, bool isTree) {
 bool isTreeOrTable(ObjCon* objL) {
     if (objL == NULL || 1 > (objL->length - objL->free)) return false;
     Obj* data1 = objL->array[0];
-    if (objL->array[0] != NULL) {
-        if (((Obj*)objL->array[0])->type == OBJ_AVL_TREE) return true;
-        else if (((Obj*)objL->array[0])->type == OBJ_HASH_TABLE) return true;
+    if (data1 != NULL) {
+        if (data1->type == OBJ_AVL_TREE) return true;
+        else if (data1->type == OBJ_HASH_TABLE) return true;
     }
     return false;
 }
@@ -86,7 +87,12 @@ int getziseL(ObjCon* objL) {
 
 // Libera la memoria de la lista
 bool freeArray(ObjCon* objL) {
-    for (int i = 0; i < objL->length - objL->free; i++) {
+    if (objL == NULL) return false;
+    if (isTreeOrTable(objL)) {
+        Obj* data1 = objL->array[0];
+        freeObjs(data1);
+    }
+    for (int i = (isTreeOrTable(objL) ? 1 : 0); i < objL->length - objL->free; i++) {
         if(objL->array[i] != NULL) freeObjs(objL->array[i]);
     }
     free(objL->array);

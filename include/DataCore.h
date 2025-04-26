@@ -5,7 +5,11 @@
 // #include "stuctura.h"
 
 
+#define SetINDIX(T, I) ((I) << 4) | ((T) & 0x0F)
+#define GetINDIX(x) (((x) >> 4) & 0x0F)
+
 typedef struct Entry {
+    ObjR obj;
     char *key;
     Obj* data;
     struct Entry *next;

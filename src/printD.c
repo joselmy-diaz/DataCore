@@ -62,6 +62,11 @@ void printObj (Obj* obj){
             printf("%s%f", RED, obtO->as.NumF);
             break;
         }
+        case TYPE_ENTRY: {
+            Entry* obtE = (Entry*)obj;
+            printEn(obtE);
+            break;
+        }
         case OBJ_STRING: {
             printf("%s%s", YELLOW, getString(obj));
             break;
