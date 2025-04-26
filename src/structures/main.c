@@ -4,28 +4,18 @@
 // de tipo Obj con un valor específico
 Obj* newObj(ObjType type, As* as) {
     Obj* res = NULL;
-    switch (type) {
-        case TYPE_NULL:
-        case TYPE_BOOL_F:
-        case TYPE_BOOL_T:
-            res = (Obj*)malloc(sizeof(Obj));
-            if (!res) return NULL;
-            res->type = type;
-            break;
-
-        case TYPE_NUM:
-        case TYPE_NUMFL:
-            if (!as) return NULL;
-            Nativo *objN = (Nativo *)malloc(sizeof(Nativo));
-            if (!objN) return NULL;
-            objN->type = type;
-            objN->as = *as; // Liberamos as después de copiarlo
-            res = (Obj*)objN;
-            break;
-
-        default:
-            // Tipo desconocido, no se hace nada
-            break;
+    char cat = getTypeCategory(type);
+    if (cat == IS_BOOL) {
+        res = (Obj*)malloc(sizeof(Obj));
+        if (!res) return NULL;
+        res->type = type;
+    } else if (cat == IS_NATIVE) {
+        if (!as) return NULL;
+        Native *objN = (Native *)malloc(sizeof(Native));
+        if (!objN) return NULL;
+        objN->type = type;
+        objN->as = *as;
+        res = (Obj*)objN;
     }
     return res;
 }
@@ -44,7 +34,7 @@ Entry* newEntry(const char* key, Obj* data) {
 
 Obj* newObjString (char * str) {
     ObjString *valueObj = (ObjString*)malloc(sizeof(ObjString));
-    valueObj->obj.type = OBJ_STRING;
+    valueObj->obj.type = TYPE_STRING;
     valueObj->obj.reference = 0;
     valueObj->length = strlen(str);
     valueObj->capacity = valueObj->length + 1; // +1 para el terminador nulo
@@ -54,19 +44,21 @@ Obj* newObjString (char * str) {
     return (Obj*)valueObj;
 }
 
-// void fereeString(Obj* obj) {
-//     ObjString* obtS = (ObjString*)obj;
-//     if (obtS->chars) free(obtS->chars);
-//     free(obtS);
-// }
+bool fereeString(ObjString* objS) {
+    if (objS->chars) free(objS->chars);
+    free(objS);
+    return true;
+}
 
-// void freeEntry(Entry* entry) {
-//     if (entry == NULL) return;
-//     if (entry->key) free(entry->key);
-//     if (entry->data) freeObjs(entry->data);  // liberar el objeto de datos
-//     if (entry->next) freeObjs(entry->next);  // liberar el siguiente objeto
-//     free(entry);
-// }
+
+bool freeEntry(Entry* entry) {
+    if (entry == NULL) return false;
+    if (entry->key) free(entry->key);
+    if (entry->data) freeObjs(entry->data);  // liberar el objeto de datos
+    if (entry->next) freeObjs(entry->next);  // liberar el siguiente objeto
+    free(entry);
+    return true;
+}
 
 char* getString(Obj* obj) {
     ObjString* obtS = (ObjString*)obj;

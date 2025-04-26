@@ -4,9 +4,11 @@
 #include "obj.h"
 // #include "stuctura.h"
 
-
-#define SetINDIX(T, I) ((I) << 4) | ((T) & 0x0F)
-#define GetINDIX(x) (((x) >> 4) & 0x0F)
+enum {
+    IS_BOOL = 1,
+    IS_NATIVE =2,
+    IS_OBJ = 3
+};
 
 typedef struct Entry {
     ObjR obj;
@@ -23,7 +25,7 @@ void printObj (Obj* obj);
 bool insertD(Obj* obj, Entry data);
 Obj* searchD(Obj* obj, const char *key);
 Obj* searchDIndex (Obj* obj, int index);
-bool isObjD(Obj* obj);
+char getTypeCategory(char res);
 bool freeObjs(Obj* obj);
 
 #endif // LISTA_H

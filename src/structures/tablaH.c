@@ -5,7 +5,7 @@
 Obj *initTH(int size) {
     ObjTebleH *table = (ObjTebleH *)malloc(sizeof(ObjTebleH));
     if (!table) return NULL;
-    table->obj.type = OBJ_HASH_TABLE;
+    table->obj.type = TYPE_HASH_TABLE;
     table->obj.reference = 0;
     table->entries = (Entry **)calloc(size, sizeof(Entry *));
     table->length = size;

@@ -21,7 +21,7 @@ Obj* initTR() {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
-    objT->obj.type = OBJ_AVL_TREE;
+    objT->obj.type = TYPE_AVL_TREE;
     objT->obj.reference = 0;
     objT->root = NULL;
     return (Obj*)objT;
@@ -106,9 +106,10 @@ NodeEntry* insertAVLH(NodeEntry* node, Entry data, int reHash) {
 }
 
 // Función para insertar un nodo en el árbol AVL
-NodeEntry* insertAVL(NodeEntry* node, Entry data) {
+NodeEntry* insertAVL(ObjTree* objT, Entry data) {
     int reHash = hash(data.key);
-    return insertAVLH(node, data, reHash);
+    objT->root = insertAVLH(objT->root, data, reHash);
+    return objT->root;
 }
 
 NodeEntry* searchTreeN(NodeEntry* node, int Hkey){

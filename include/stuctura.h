@@ -52,19 +52,21 @@ void insertTH(ObjTebleH *table, Entry data);
 bool freeTH(ObjTebleH *table);
 
 Obj *initTR();
-Obj *NewFunction();
-NodeEntry* insertAVL(NodeEntry* node, Entry data);
+NodeEntry* insertAVL(ObjTree* objT, Entry data);
 NodeEntry* newNode(Entry data);
 Obj* searchTree(ObjTree* obj, const char *key);
 void preOrder(NodeEntry *root);
 bool freeTR(ObjTree* objT);
 
 Obj *initList(int size, bool isTree);
-bool insertL(ObjCon* objL, Obj* data);
+bool insertArray(ObjCon* objL, Obj* data);
 int getziseL(ObjCon* objL);
 bool insertLByKey(ObjCon* objL, Entry data);
-Obj* searchL(ObjCon *objL, int index);
+Obj* searchArray(ObjCon *objL, int index);
 Obj* searchLByKey(ObjCon* objL, const char* key);
 bool freeArray(ObjCon* objL);
+
+bool fereeString(ObjString* obj) ;
+bool freeEntry(Entry* entry);
 
 #endif

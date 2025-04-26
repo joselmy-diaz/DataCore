@@ -18,13 +18,13 @@ void chargeObj(Obj* obj) {
     Entry* e4 = newEntry("data4", newObjString("Hola"));
 
     // // Insertar las primeras 11 entradas
-    insertL(obj, e1);
+    insertArray(obj, e1);
     freeObjs(e1);
-    insertL(obj, e2);
+    insertArray(obj, e2);
     freeObjs(e2);
-    insertL(obj, e3);
+    insertArray(obj, e3);
     freeObjs(e3);
-    insertL(obj, e4);
+    insertArray(obj, e4);
     freeObjs(e4);
 
     // Agregar más datos dinámicamente
@@ -35,16 +35,16 @@ void chargeObj(Obj* obj) {
         if (i % 3 == 0) {
             As asValue = { .Num = i * 2 };
             Entry* entry = newEntry(key, newObj(TYPE_NUM, &asValue));
-            insertL(obj, entry);
+            insertArray(obj, entry);
             freeObjs(entry);
         } else if (i % 3 == 1) {
             As asValue = { .Num = i * 1.3 };
             Entry* entry = newEntry(key, newObj(TYPE_NUM, &asValue));
-            insertL(obj, entry);
+            insertArray(obj, entry);
             freeObjs(entry);
         } else {
             Entry* entry = newEntry(key, newObjString("Texto dinámico"));
-            insertL(obj, entry);
+            insertArray(obj, entry);
             freeObjs(entry);
         }
     }
@@ -69,6 +69,7 @@ int main(int argc, char const *argv[]) {
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Tiempo de inserción en la lista: %f segundos\n", cpu_time_used);
+    printObjf(lis);
 
     // Punto de control: Inicialización de tablas
     printf("\nInicializando tabla hash y árbol...\n");
@@ -79,7 +80,7 @@ int main(int argc, char const *argv[]) {
     printf("\nInsertando en la tabla hash...\n");
     start = clock();
     for (int i = 0; i < getziseL(lis); i++) {
-        Entry* entry = (Entry*)searchL(lis, i);
+        Entry* entry = (Entry*)searchArray(lis, i);
         if (entry != NULL) {
             insertD(table, *entry);
         }
@@ -92,7 +93,7 @@ int main(int argc, char const *argv[]) {
     printf("\nInsertando en el árbol AVL...\n");
     start = clock();
     for (int i = 0; i < getziseL(lis); i++) {
-        Entry* entry = (Entry*)searchL(lis, i);
+        Entry* entry = (Entry*)searchArray(lis, i);
         if (entry != NULL) {
             insertD(tree, *entry);
         }
@@ -100,13 +101,6 @@ int main(int argc, char const *argv[]) {
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Tiempo de inserción en el árbol AVL: %f segundos\n", cpu_time_used);
-
-
-    // Puntos de control: Lista
-    printf("\nLiberando en la lista...\n");
-    bool res = freeObjs(lis);
-    if (!res)printf("Estructura no encontrada para liberar.");
-
 
     // Imprimir valores en la tabla hash
     // printf("\nValores en la tabla:\n");
@@ -122,11 +116,11 @@ int main(int argc, char const *argv[]) {
     
 
     // Liberar memoria
-
-    printObjf(lis);
+    printf("\nLiberando memoria...\n");
+    bool res = freeObjs(lis);
     freeObjs(table);
     freeObjs(tree);
-    // Punto de control: Medición final
+    if (!res)printf("Estructura no encontrada para liberar.");
     printf("\nMedición del tiempo total...\n");
     end = clock();
     cpu_time_used = ((double)(end - startA)) / CLOCKS_PER_SEC;

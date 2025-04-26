@@ -53,12 +53,12 @@ void printObj (Obj* obj){
             printf("%s%s", MAGENTA, "true");
             break;
         case TYPE_NUM: {
-            Nativo* obtO = (Nativo*)obj;
+            Native* obtO = (Native*)obj;
             printf("%s%d", RED, obtO->as.Num);
             break;
         }
         case TYPE_NUMFL: {
-            Nativo* obtO = (Nativo*)obj;
+            Native* obtO = (Native*)obj;
             printf("%s%f", RED, obtO->as.NumF);
             break;
         }
@@ -67,27 +67,27 @@ void printObj (Obj* obj){
             printEn(obtE);
             break;
         }
-        case OBJ_STRING: {
+        case TYPE_STRING: {
             printf("%s%s", YELLOW, getString(obj));
             break;
         }
-        case OBJ_ARRAY:
+        case TYPE_ARRAY:
             printf("%s[", WHITE);
             for (int i = 0; i < getziseL(obj); i++) {
-                printObj(searchL(obj, i));
+                printObj(searchArray(obj, i));
                 if (i < getziseL(obj) - 1) printf("%s, ", WHITE);
             }
             printf("%s]", WHITE);
             break;
-        case OBJ_HASH_TABLE:
+        case TYPE_HASH_TABLE:
             printf("%s%s", BLUE, "Hash Table");
             break;
-        case OBJ_AVL_TREE:
+        case TYPE_AVL_TREE:
             printf("%s{", WHITE);
             recorrerNodo( ((ObjTree*)obj)->root);
             printf("%s}", WHITE);
             break;
-        case OBJ_FUNCTION:
+        case TYPE_FUNCTION:
             printf("%s%s", GREEN, "<Function Object>");
             break;
         default:

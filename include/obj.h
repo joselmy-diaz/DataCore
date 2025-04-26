@@ -8,18 +8,21 @@
 
 typedef uint8_t ObjType;
 
+#define SetINDIX(T, I) ((I) << 4) | ((T) & 0x0F)
+#define GetINDIX(x) (((x) >> 4) & 0x0F)
+
 enum {
-  TYPE_NULL = 0,
-  TYPE_BOOL_F = 1,
-  TYPE_BOOL_T = 2,
-  TYPE_NUM       = 3,
-  TYPE_NUMFL     = 5,
-  TYPE_ENTRY      = 11,
-  OBJ_STRING     = 6,
-  OBJ_HASH_TABLE = 7,
-  OBJ_AVL_TREE   = 8,
-  OBJ_ARRAY      = 9,
-  OBJ_FUNCTION   = 10,
+  TYPE_NULL       = 0,
+  TYPE_BOOL_F     = 1,
+  TYPE_BOOL_T     = 2,
+  TYPE_NUM        = 3,
+  TYPE_NUMFL      = 5,
+  TYPE_ENTRY      = 6,
+  TYPE_STRING     = 7,
+  TYPE_HASH_TABLE = 8,
+  TYPE_AVL_TREE   = 9,
+  TYPE_ARRAY      = 10,
+  TYPE_FUNCTION   = 11,
 };
 
 typedef struct {
@@ -34,7 +37,7 @@ typedef union {
 typedef struct {
   ObjType type;
   As as;
-} Nativo;
+} Native;
 
 typedef struct {
   ObjType type;
