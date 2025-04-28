@@ -103,12 +103,14 @@ int main(int argc, char const *argv[]) {
     printf("Tiempo de inserción en el árbol AVL: %f segundos\n", cpu_time_used);
 
     // Imprimir valores en la tabla hash
-    // printf("\nValores en la tabla:\n");
-    // for (int i = 0; i < getziseL(lis); i++) {
-    //     char key[32]; // Increase buffer size to handle larger numbers safely
-    //     snprintf(key, sizeof(key), "data%d", i);
-    //     printObj(searchD(table, key));
-    // }
+    printf("\nValores en la tabla:\n");
+    for (int i = 0; i < getziseL(lis); i++) {
+        char key[32]; // Increase buffer size to handle larger numbers safely
+        snprintf(key, sizeof(key), "data%d", i+1);
+        printf(", %s:", key);
+        printObj(searchD(table, key));
+        printf(" ");
+    }
 
     // Imprimir valores en el árbol AVL
     printf("\nValores en el árbol AVL:\n");
