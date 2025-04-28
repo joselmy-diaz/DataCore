@@ -28,7 +28,7 @@ void chargeObj(Obj* obj) {
     freeObjs(e4);
 
     // Agregar más datos dinámicamente
-    for (int i = 5; i <= 20; i++) {
+    for (int i = 5; i <= 1000; i++) {
         char key[32]; // Increase buffer size to handle larger numbers safely
         snprintf(key, sizeof(key), "data%d", i); // Ensure format string is correct
 
@@ -61,18 +61,18 @@ int main(int argc, char const *argv[]) {
 
     // Inicialización de objetos
 
-    startA = clock();
-    Obj *lis = initList(6, false);
-    // Inserciones en la lista
     start = clock();
+    startA = start;
+    Obj *lis = initList(900, false);
+    // Inserciones en la lista
     chargeObj(lis);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Tiempo de inserción en la lista: %f segundos\n", cpu_time_used);
-    printObjf(lis);
 
     // Punto de control: Inicialización de tablas
     printf("\nInicializando tabla hash y árbol...\n");
+    start = clock();
     Obj *table = initTH(100);
     Obj *tree = initTR();
 
@@ -88,6 +88,7 @@ int main(int argc, char const *argv[]) {
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Tiempo de inserción en la tabla hash: %f segundos\n", cpu_time_used);
+    start = clock();
 
     // Inserciones en el árbol AVL
     printf("\nInsertando en el árbol AVL...\n");
@@ -101,6 +102,7 @@ int main(int argc, char const *argv[]) {
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Tiempo de inserción en el árbol AVL: %f segundos\n", cpu_time_used);
+    start = clock();
 
     // Imprimir valores en la tabla hash
     printf("\nValores en la tabla:\n");
@@ -111,11 +113,20 @@ int main(int argc, char const *argv[]) {
         printObj(searchD(table, key));
         printf(" ");
     }
-
     // Imprimir valores en el árbol AVL
     printf("\nValores en el árbol AVL:\n");
     printObjf(tree);
     
+    // Imprimir valores en la lista
+    printf("\nValores en la lista:\n");
+    printObjf(lis);
+
+
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Belosidad de Busqueda en todas las estructuras: %f segundos\n", cpu_time_used);
+    start = clock();
+
 
     // Liberar memoria
     printf("\nLiberando memoria...\n");

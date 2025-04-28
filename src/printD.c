@@ -42,6 +42,10 @@ void recorrerNodo(NodeEntry* nodo) {
 }
 
 void printObj (Obj* obj){
+    if (obj == NULL) {
+        printf("%s%s", RED, "NULL");
+        return;
+    }
     switch (obj->type) {
         case TYPE_NULL:
             printf("%s%s", RED, "NULL");

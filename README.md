@@ -13,6 +13,14 @@ El propósito principal de DataCore es facilitar la manipulación de datos en es
 - **Gestión de memoria**: Incluye funciones para liberar memoria de manera segura y eficiente.
 - **Creación de objetos**: Proporciona métodos para inicializar objetos y entradas clave-valor.
 
+## Instalación
+
+```bash
+# Clona este repositorio
+git clone https://github.com/joselmy-diaz/DataCore.git
+
+```
+
 ## Cómo utilizarlo
 
 A continuación, se describe cómo utilizar las principales funcionalidades de **DataCore** con ejemplos prácticos basados en el archivo `DataCoreT.c`.
@@ -24,14 +32,19 @@ Para inicializar un objeto, utiliza la función `newData` o `newObj` dependiendo
 ```c
 // Crear un objeto de tipo número entero
 As asValue1 = { .Num = 31 };
-Entry e1 = newEntry("data1", newObj(TYPE_NUM, &asValue1));
+Obj* data1 = newObj(TYPE_NUM, &asValue1);
+// Debes colocarlo en un Entry para estructura que requieren clave valor
+// como: Arbol AVL, Tabla hash
+Entry e1 = newEntry("data1", data1);
 
 // Crear un objeto de tipo número flotante
 As asValue2 = { .NumF = 12.2 };
-Entry e2 = newEntry("data2", newObj(TYPE_NUMFL, &asValue2));
+Obj* data2 = newObj(TYPE_NUMFL, &asValue2);
+Entry e2 = newEntry("data2", data2);
 
 // Crear un objeto de tipo cadena de texto
-Entry e6 = newEntry("data6", newObjString("Hola mundo1"));
+Obj* data3 = newObjString("Hola mundo");
+Entry e6 = newEntry("data3", data3);
 ```
 
 ### 2. Inicialización de Estructuras de Datos
@@ -54,20 +67,15 @@ Obj *lis = initList(14, true);
 Puedes insertar datos en las estructuras utilizando la función `insertD`. Por ejemplo:
 
 ```c
+    Obj* data1 = newObjString("Hola mundo");
 // Insertar entradas en una tabla hash
-for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-    insertD(table, entries[i]);
-}
+    insertD(table, data1);
 
 // Insertar entradas en un árbol AVL
-for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-    insertD(tree, entries[i]);
-}
+    insertD(tree, data1);
 
 // Insertar entradas en una lista
-for (int i = 0; i < sizeof(entries) / sizeof(entries[0]); i++) {
-    insertD(lis, entries[i]);
-}
+    insertD(lis, data1);
 ```
 
 ### 4. Búsqueda de Datos
@@ -79,10 +87,10 @@ Para buscar datos en las estructuras, utiliza la función `searchD`. Por ejemplo
 Obj* data = searchD(table, "data1");
 
 // Buscar un dato en el árbol AVL
-Obj* dataTree = searchD(tree, "data2");
+Obj* dataTree = searchD(tree, "data1");
 
 // Buscar un dato en la lista
-Obj* dataList = searchD(lis, "data3");
+Obj* dataList = searchD(lis, "data1");
 ```
 
 ### 5. Impresión de Datos
