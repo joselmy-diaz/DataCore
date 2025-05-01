@@ -59,7 +59,7 @@ Obj *table = initTH(100);
 Obj *tree = initTR();
 
 // Inicializar una lista con capacidad inicial de 14 elementos
-Obj *lis = initList(14, true);
+Obj *lis = initArray(14, false);
 ```
 
 ### 3. Inserción de Datos
@@ -75,7 +75,7 @@ Puedes insertar datos en las estructuras utilizando la función `insertD`. Por e
     insertD(tree, data1);
 
 // Insertar entradas en una lista
-    insertD(lis, data1);
+    insertArray(lis, data1);
 ```
 
 ### 4. Búsqueda de Datos
@@ -90,7 +90,7 @@ Obj* data = searchD(table, "data1");
 Obj* dataTree = searchD(tree, "data1");
 
 // Buscar un dato en la lista
-Obj* dataList = searchD(lis, "data1");
+Obj* dataList = searchArray(lis, "data1");
 ```
 
 ### 5. Impresión de Datos
