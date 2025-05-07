@@ -56,7 +56,7 @@ NodeEntry *leftRotate(NodeEntry *x) {
 }
 
 NodeEntry* insertAVLH(NodeEntry* node, Entry data, int reHash) {
-    if (node == NULL)  {
+    if (node == NULL || node->key == NULL) {
         NodeEntry* newNode = (NodeEntry*)malloc(sizeof(NodeEntry));
         newNode->key = strdup(data.key);
         assignData(&newNode->data, data.data);

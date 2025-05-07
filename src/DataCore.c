@@ -1,7 +1,6 @@
 #include "./DataCore.h"
 #include "stuctura.h"
 
-
 char getTypeCategory(char res) {
     if (res <= 5) {
         if (res <= 2) res = IS_BOOL;
@@ -12,16 +11,16 @@ char getTypeCategory(char res) {
     return res;
 }
 
-bool (*insertObjR[])(Obj*, Entry) = {
-    (bool (*)(Obj*, Entry))insertTH,
-    (bool (*)(Obj*, Entry))insertAVL,
-    (bool (*)(Obj*, Entry))insertLByKey,
-};
-// return insertLByKey(objT, data);
-
 bool insertD(Obj* obj, Entry data) {
     if (obj == NULL || getTypeCategory(obj->type) != IS_OBJ) return false;
-    return insertObjR[obj->type - 8](obj, data);
+
+    switch (obj->type) {
+        case TYPE_HASH_TABLE:  insertTH((ObjCon*)obj, data); break;
+        case TYPE_AVL_TREE:    return insertAVL((ObjCon*)obj, data); break;
+        case TYPE_ARRAY:       return insertLByKey((ObjCon*)obj, data);
+        default:               return false;
+    }
+    return false;
 }
 
 // Inserta de estrutura de datos punteres si es objeto igualalo y al as sumale 1 
@@ -39,16 +38,20 @@ bool assignData(Obj** obj, Obj* data) {
     return true;
 }
 
-Obj* (*searchObjR[])(Obj*, const char *key) = {
-    (Obj* (*)(Obj*, const char *))searchTH,
-    (Obj* (*)(Obj*, const char *))searchTree,
-    (Obj* (*)(Obj*, const char *))searchArray,
-};
-
 // Busca un elemento en la lista
 Obj* searchD (Obj* obj, const char *key) {
     if (obj == NULL || getTypeCategory(obj->type) != IS_OBJ) return NULL;
-    return searchObjR[obj->type - 8](obj, key);
+
+    switch (obj->type) {
+        case TYPE_HASH_TABLE:
+            return searchTH(obj, key);
+        case TYPE_AVL_TREE:
+            return searchTree(obj, key);
+        case TYPE_ARRAY:
+            return searchLByKey(obj, key);
+        default:
+            return NULL;
+    }
 }
 
 Obj* searchDIndex (Obj* obj, int index) {
@@ -60,22 +63,13 @@ Obj* searchDIndex (Obj* obj, int index) {
     return RData;
 }
 
-bool (*freeObjR[])(Obj*) = {
-    (bool (*)(Obj*))freeEntry,
-    (bool (*)(Obj*))freeString,
-    (bool (*)(Obj*))freeTH,
-    (bool (*)(Obj*))freeTR,
-    (bool (*)(Obj*))freeArray
-};
-
-
 bool freeObjs(Obj* obj) {
     if (obj == NULL) return true;
     char cat = getTypeCategory(obj->type);
     if (cat == IS_BOOL) {
         free(obj);
         return true;
-    }else if (cat == IS_NATIVE) {
+    } else if (cat == IS_NATIVE) {
         free((Native*)obj);
         return true;
     }
@@ -88,6 +82,15 @@ bool freeObjs(Obj* obj) {
         objT->reference--;
         return true;
     }
-    freeObjR[obj->type - 6](obj);
+
+    // Manejo de liberación basado en el tipo de objeto
+    switch (obj->type) {
+        case TYPE_ENTRY:      freeEntry(obj);      break;
+        case TYPE_STRING:     freeString(obj);     break;
+        case TYPE_HASH_TABLE: freeTH(obj);         break;
+        case TYPE_AVL_TREE:   freeTR(obj);         break;
+        case TYPE_ARRAY:      freeArray(obj);      break;
+        default: return false; // Tipo desconocido
+    }
     return true;
 }

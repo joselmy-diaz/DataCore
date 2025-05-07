@@ -54,8 +54,8 @@ bool insertArray(ObjCon* objL, Obj* data) {
         return true;
     } else {
         size_t oldLength = objL->length;
-        objL->length += 100;
-        objL->free = 99;
+        objL->length += 10;
+        objL->free = 9;
         Obj** temp = realloc(objL->array, objL->length * sizeof(Obj*));
         if (temp == NULL)  return false;  // Falló realloc → no toques objL
         objL->array = temp;
