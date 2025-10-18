@@ -14,23 +14,23 @@ Obj *initTH(int size) {
 }
 
 // Insertar un elemento en la tabla
-void insertTH(ObjTebleH *table, Entry ent) {
-    if (table->entries == NULL) return;
-    unsigned int index = hash(ent.key) % table->length;
-    Entry *new_entry = (Entry *)malloc(sizeof(Entry));
-    if (!new_entry) return;
+bool insertTH(Obj *table, Entry* new_entry) {
+    ObjTebleH *hashTable = (ObjTebleH *)table;
+    if (hashTable->entries == NULL) return false;
+    unsigned int index = hash(new_entry->key) % hashTable->length;
+    if (!new_entry) return false;
 
-    new_entry->key = strdup(ent.key);
-    assignData(&new_entry->data, ent.data);
-    new_entry->next = table->entries[index];
-    table->entries[index] = new_entry;
+    new_entry->next = hashTable->entries[index];
+    hashTable->entries[index] = new_entry;
+    return true;
 }
 
 // Buscar un elemento en la tabla
-Obj* searchTH(ObjTebleH *table, const char *key) {
-    if (table->entries == NULL) return NULL;
-    unsigned int index = hash(key) % table->length;
-    Entry *entry = table->entries[index];
+Obj* searchTH(Obj *table, const char *key) {
+    ObjTebleH *hashTable = (ObjTebleH *)table;
+    if (hashTable->entries == NULL) return NULL;
+    unsigned int index = hash(key) % hashTable->length;
+    Entry *entry = hashTable->entries[index];
     while (entry != NULL) {
         if (strcmp(entry->key, key) == 0) return entry->data;
         entry = entry->next;
@@ -38,24 +38,38 @@ Obj* searchTH(ObjTebleH *table, const char *key) {
     return NULL; // Valor no encontrado
 }
 
+/* --- Recorrer --- */
+void hash_foreach(Obj *table, void (*callback)(Entry*)) {
+    ObjTebleH *hashTable = (ObjTebleH *)table;
+    if (hashTable->entries == NULL) return;
+    for (int i = 0; i < hashTable->length; i++) {
+        Entry *entry = hashTable->entries[i];
+        while (entry != NULL) {
+            callback(entry);
+            entry = entry->next;
+        }
+    }
+}
+
 void freeEnT(Entry* entry){
-    // if (entry == NULL) return;
+    if (entry == NULL) return;
     if (entry->next != NULL) freeEnT(entry->next);
-    free(entry->key);
-    freeObjs(entry->data);
+    if (entry->key) free(entry->key);
+    if (entry->data) freeObjs(entry->data);
     free(entry);
 }
 
 // Liberar la memoria de la tabla
-bool freeTH (ObjTebleH *table) {
-    if (table == NULL) return true;
-    for (int i = 0; i < table->length; i++) {
-        if (table->entries[i] != NULL) {
-            freeEnT(table->entries[i]);
+bool freeTH (Obj *table) {
+    ObjTebleH *hashTable = (ObjTebleH *)table;
+    if (hashTable == NULL) return true;
+    for (int i = 0; i < hashTable->length; i++) {
+        if (hashTable->entries[i] != NULL) {
+            freeEnT(hashTable->entries[i]);
         }
     }
-    free(table->entries);
-    table->entries = NULL;
-    free(table);
+    free(hashTable->entries);
+    hashTable->entries = NULL;
+    free(hashTable);
     return true;
 }

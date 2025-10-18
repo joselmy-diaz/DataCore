@@ -15,8 +15,7 @@ typedef struct {
 // Estructura del nodo del árbol AVL
 typedef struct NodeEntry {
     ObjR obj;
-    char *key;
-    Obj* data;
+    Entry* data;
     struct NodeEntry* left;
     struct NodeEntry* right;
     int height;
@@ -34,37 +33,40 @@ typedef struct {
     Obj** array;
     size_t length;
     int8_t free;
-} ObjCon;
+} ObjArray;
 
 
 unsigned int hash(const char *key);
 
 Obj* newObj(ObjType type, As* as);
 Obj* newObjString(char * str);
-Entry* newEntry(const char* key, Obj* data);
+bool setObjString (Obj* objString, const char* str);
+int getStringSize(Obj* obj);
 char* getString(Obj* obj);
+Entry* newEntry(const char* key, Obj* data);
 
 void freeEn (Entry* entry);
 
 Obj* initTH(int size);
-Obj* searchTH(ObjTebleH *table, const char *key);
-void insertTH(ObjTebleH *table, Entry data);
-bool freeTH(ObjTebleH *table);
+Obj *searchTH(Obj *table, const char *key);
+void NewFunction(Entry *entry);
+bool insertTH(Obj*table, Entry* data);
+bool freeTH(Obj *table);
 
 Obj *initTR();
-NodeEntry* insertAVL(ObjTree* objT, Entry data);
-NodeEntry* newNode(Entry data);
-Obj* searchTree(ObjTree* obj, const char *key);
+Obj* searchTree(Obj* obj, const char *key);
+bool insertAVL(Obj* objT, Entry* data);
+NodeEntry* newNode(Entry* data);
 void preOrder(NodeEntry *root);
-bool freeTR(ObjTree* objT);
+bool freeTR(Obj* objT);
 
-Obj *initArray(int8_t size, bool isTree);
-bool insertArray(ObjCon* objL, Obj* data);
-int getziseL(ObjCon* objL);
-bool insertLByKey(ObjCon* objL, Entry data);
-Obj* searchArray(ObjCon *objL, int index);
-Obj* searchLByKey(ObjCon* objL, const char* key);
-bool freeArray(ObjCon* objL);
+Obj *initArray(int8_t size);
+bool insertIArray (ObjArray* objL, int index, Obj* data);
+bool insertArray(Obj* objL, Obj* data);
+int getArraySize(Obj* objL);
+Obj* searchArray(Obj* objL, int index);;
+Obj* popArray(Obj* obj);
+bool freeArray(Obj* objL);
 
 bool freeString(ObjString* obj);
 bool freeEntry(Entry* entry);

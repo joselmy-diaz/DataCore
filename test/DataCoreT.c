@@ -28,7 +28,7 @@ void chargeObj(Obj* obj) {
     freeObjs(e4);
 
     // Agregar más datos dinámicamente
-    for (int i = 5; i <= 1000; i++) {
+    for (int i = 5; i <= 10; i++) {
         char key[32]; // Increase buffer size to handle larger numbers safely
         snprintf(key, sizeof(key), "data%d", i); // Ensure format string is correct
 
@@ -38,12 +38,12 @@ void chargeObj(Obj* obj) {
             insertArray(obj, entry);
             freeObjs(entry);
         } else if (i % 3 == 1) {
-            As asValue = { .Num = i * 1.3 };
-            Entry* entry = newEntry(key, newObj(TYPE_NUM, &asValue));
+            As asValue = { .NumF = i * 1.3 };
+            Entry* entry = newEntry(key, newObj(TYPE_NUMFL, &asValue));
             insertArray(obj, entry);
             freeObjs(entry);
         } else {
-            Entry* entry = newEntry(key, newObjString("Texto dinámico"));
+            Entry* entry = newEntry(key, newObjString("Texto dinámico "));
             insertArray(obj, entry);
             freeObjs(entry);
         }
@@ -53,8 +53,8 @@ void chargeObj(Obj* obj) {
 int main(int argc, char const *argv[]) {
     clock_t startA, start, end;
     double cpu_time_used;
-    printf("tamano de Data es: %zu\n", sizeof(ObjString));
-    printf("Alignment: %zu bytes\n", alignof(Obj));
+    printf("tamano de Data es: %zu\n", sizeof(Native*));
+    printf("Alignment: %zu bytes\n", sizeof(Native));
 
     // Punto de control: Inicio de inicialización
     printf("\nInicializando objetos...\n");
@@ -63,9 +63,10 @@ int main(int argc, char const *argv[]) {
 
     start = clock();
     startA = start;
-    Obj *lis = initArray(100, false);
+    Obj *lis = initArray(100);
     // Inserciones en la lista
     chargeObj(lis);
+    printObjf(lis);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Tiempo de inserción en la lista: %f segundos\n", cpu_time_used);
@@ -79,10 +80,10 @@ int main(int argc, char const *argv[]) {
     // Inserciones en la tabla hash
     printf("\nInsertando en la tabla hash...\n");
     start = clock();
-    for (int i = 0; i < getziseL(lis); i++) {
+    for (int i = 0; i < getArraySize(lis); i++) {
         Entry* entry = (Entry*)searchArray(lis, i);
         if (entry != NULL) {
-            insertD(table, *entry);
+            insertD(table, entry);
         }
     }
     end = clock();
@@ -93,10 +94,10 @@ int main(int argc, char const *argv[]) {
     // Inserciones en el árbol AVL
     printf("\nInsertando en el árbol AVL...\n");
     start = clock();
-    for (int i = 0; i < getziseL(lis); i++) {
+    for (int i = 0; i < getArraySize(lis); i++) {
         Entry* entry = (Entry*)searchArray(lis, i);
         if (entry != NULL) {
-            insertD(tree, *entry);
+            insertD(tree, entry);
         }
     }
     end = clock();
@@ -106,13 +107,8 @@ int main(int argc, char const *argv[]) {
 
     // Imprimir valores en la tabla hash
     printf("\nValores en la tabla:\n");
-    for (int i = 0; i < getziseL(lis); i++) {
-        char key[32]; // Increase buffer size to handle larger numbers safely
-        snprintf(key, sizeof(key), "data%d", i+1);
-        printf(", %s:", key);
-        printObj(searchD(table, key));
-        printf(" ");
-    }
+    printObjf(table);
+    printf("\n");
     // Imprimir valores en el árbol AVL
     printf("\nValores en el árbol AVL:\n");
     printObjf(tree);
@@ -131,8 +127,8 @@ int main(int argc, char const *argv[]) {
     // Liberar memoria
     printf("\nLiberando memoria...\n");
     bool res = freeObjs(lis);
-    freeObjs(table);
     freeObjs(tree);
+    freeObjs(table);
     if (!res)printf("Estructura no encontrada para liberar.");
     printf("\nMedición del tiempo total...\n");
     end = clock();

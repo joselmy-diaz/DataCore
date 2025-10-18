@@ -55,18 +55,19 @@ NodeEntry *leftRotate(NodeEntry *x) {
     return y;
 }
 
-NodeEntry* insertAVLH(NodeEntry* node, Entry data, int reHash) {
-    if (node == NULL || node->key == NULL) {
+NodeEntry* insertAVLH(NodeEntry* node, Entry* data, int reHash) {
+    if (node == NULL) {
         NodeEntry* newNode = (NodeEntry*)malloc(sizeof(NodeEntry));
-        newNode->key = strdup(data.key);
-        assignData(&newNode->data, data.data);
+        newNode->obj.type = TYPE_ENTRY;
+        assignData(&newNode->data, data);
+        if (newNode->data->key == NULL) fprintf(stderr, "Memory allocation for key failed\n");
         newNode->left = NULL;
         newNode->right = NULL;
         newNode->height = 1; // nuevo nodo es inicialmente agregado al árbol
         return newNode;
     }
 
-    int hashNode = hash(node->key);
+    int hashNode = hash(node->data->key);
     if (reHash < hashNode)
         node->left = insertAVLH(node->left, data, reHash);
     else if (reHash > hashNode)
@@ -81,8 +82,8 @@ NodeEntry* insertAVLH(NodeEntry* node, Entry data, int reHash) {
 
     // Rotaciones necesarias para balancear el árbol
     // Caso Izquierda Izquierda
-    int leftHash = node->left ? hash(node->left->key) : 0;
-    int rightHash = node->right ? hash(node->right->key) : 0;
+    int leftHash = node->left ? hash(node->left->data->key) : 0;
+    int rightHash = node->right ? hash(node->right->data->key) : 0;
     if (balance > 1 && reHash < leftHash)
         return rightRotate(node);
 
@@ -106,25 +107,28 @@ NodeEntry* insertAVLH(NodeEntry* node, Entry data, int reHash) {
 }
 
 // Función para insertar un nodo en el árbol AVL
-NodeEntry* insertAVL(ObjTree* objT, Entry data) {
-    int reHash = hash(data.key);
+bool insertAVL(Obj* obj, Entry* data) {
+    ObjTree* objT = (ObjTree*)obj;
+    int reHash = hash(data->key);
     objT->root = insertAVLH(objT->root, data, reHash);
-    return objT->root;
+
+    return true;
 }
 
 NodeEntry* searchTreeN(NodeEntry* node, int Hkey){
     if (node == NULL)  return NULL;
-    int hashNode = hash(node->key);
+    int hashNode = hash(node->data->key);
     if (Hkey < hashNode) return searchTreeN(node->left, Hkey);
     else if (Hkey > hashNode) return searchTreeN(node->right, Hkey);
     else if (hashNode == Hkey) return node;
     else return NULL;
 }
 
-Obj* searchTree(ObjTree* obj, const char *key){
+Obj* searchTree(Obj* obj, const char *key){
     Obj* emptyData = NULL;
     if (obj == NULL) return emptyData;
-    NodeEntry* node = obj->root;
+    ObjTree* objT = (ObjTree*)obj;
+    NodeEntry* node = objT->root;
     if (node == NULL) return emptyData;
 
     int reHash = hash(key);
@@ -132,13 +136,13 @@ Obj* searchTree(ObjTree* obj, const char *key){
     if (resultNode == NULL) {
         return emptyData;
     }
-    return resultNode->data;
+    return resultNode->data->data;
 }
 
 // Función para imprimir el árbol en preorden
 void preOrder(NodeEntry *root) {
     if (root != NULL) {
-        printf("%s ", root->key);
+        printObjf((Obj*)root->data);
         preOrder(root->left);
         preOrder(root->right);
     }
@@ -150,13 +154,13 @@ void freeNode(NodeEntry* node) {
     if (node == NULL) return;
     freeNode(node->left);
     freeNode(node->right);
-    free(node->key);
     freeObjs(node->data);
     free(node);
 }
 
 // Función para liberar memoria del árbol AVL
-bool freeTR(ObjTree* objT) {
+bool freeTR(Obj* obj) {
+    ObjTree* objT = (ObjTree*)obj;
     if (objT->root != NULL) {
         freeNode(objT->root);
     }

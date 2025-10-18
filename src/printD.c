@@ -22,10 +22,9 @@
 #define RESET   "\x1b[0m"
 
 
-char* printEn(Entry* entry){
-    printf("%s:", entry->key);
+void printEn(Entry* entry){
+    printf("%s%s:", WHITE, entry->key);
     printObj(entry->data);
-    return NULL;
 }
 
 void recorrerNodo(NodeEntry* nodo) {
@@ -35,16 +34,26 @@ void recorrerNodo(NodeEntry* nodo) {
     recorrerNodo(nodo->left);
 
     if (nodo->data != NULL) {
-        printEn(nodo);
+        printEn(nodo->data);
         printf("%s ,", WHITE);
     }
     recorrerNodo(nodo->right);
 }
 
+void TablaP(Entry* nodo) {
+    if (nodo == NULL) return;
+    printEn(nodo);
+    printf("%s ,", WHITE);
+}
+
 void printObj (Obj* obj){
+    if (obj == NULL) {
+        printf("%s%s\n", RED, "NULL");
+        return;
+    }
     switch (obj->type) {
         case TYPE_NULL:
-            printf("%s%s", RED, "NULL");
+            printf("%s%s\n", RED, "NULL");
             break;
         case TYPE_BOOL_F:
             printf("%s%s", MAGENTA, "false");
@@ -73,18 +82,20 @@ void printObj (Obj* obj){
         }
         case TYPE_ARRAY:
             printf("%s[", WHITE);
-            for (int i = 0; i < getziseL(obj); i++) {
+            for (int i = 0; i < getArraySize(obj); i++) {
                 printObj(searchArray(obj, i));
-                if (i < getziseL(obj) - 1) printf("%s, ", WHITE);
+                if (i < getArraySize(obj) - 1) printf("%s, ", WHITE);
             }
             printf("%s]", WHITE);
             break;
         case TYPE_HASH_TABLE:
-            printf("%s%s", BLUE, "Hash Table");
+            printf("%s{", BLUE);
+            hash_foreach(obj, TablaP);
+            printf("%s}", BLUE);
             break;
         case TYPE_AVL_TREE:
             printf("%s{", WHITE);
-            recorrerNodo( ((ObjTree*)obj)->root);
+            recorrerNodo(((ObjTree*)obj)->root);
             printf("%s}", WHITE);
             break;
         case TYPE_FUNCTION:
@@ -98,7 +109,7 @@ void printObj (Obj* obj){
 
 void printObjf (Obj* obj) {
     if (obj == NULL) {
-        printf("%s%s", RED, "NULL");
+        printf("%s%s\n", RED, "NULL");
         return;
     }
     printObj(obj);

@@ -7,12 +7,6 @@ project(DataCore)
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 
-
-# # Añadir opciones de compilación y enlace para -pg
-# add_compile_options(-pg)
-# add_link_options(-pg)
-
-
 # Archivos fuente para el cliente y el servidor
 set(SERVER_SOURCE 
     ./src/printD.c

@@ -10,19 +10,14 @@ enum {
     IS_OBJ = 3
 };
 
-typedef struct Entry {
-    ObjR obj;
-    char *key;
-    Obj* data;
-    struct Entry *next;
-} Entry;
 
+void hash_foreach(Obj *table, void (*callback)(Entry*));
 
 bool assignData(Obj** obj, Obj* data);
 void printObjf(Obj* data);
 void printObj (Obj* obj);
 
-bool insertD(Obj* obj, Entry data);
+bool insertD(Obj* obj, Entry* data);
 Obj* searchD(Obj* obj, const char *key);
 Obj* searchDIndex (Obj* obj, int index);
 char getTypeCategory(char res);

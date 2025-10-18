@@ -11,7 +11,10 @@
         "vector": "c",
         "chrono": "c",
         "variant": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "bitset": "c",
+        "__locale": "c",
+        "__node_handle": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

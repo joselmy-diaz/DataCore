@@ -1,5 +1,5 @@
 // Función hash simple para generar índices
-unsigned int hash(const char *key) {
+unsigned int hash (const char *key) {
     unsigned long hash = 5381;
     int c;
     while ((c = *key++))
