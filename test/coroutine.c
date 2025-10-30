@@ -11,7 +11,7 @@
 /* Simula tus includes */
 #include "DataCore.h"
 #include "obj.h"
-#include "stuctura.h"
+#include "estructura.h"
 
 
 Obj* lisA;
@@ -111,7 +111,7 @@ int main(void) {
 // #include <unistd.h>
 
 // #include "DataCore.h"
-// #include "stuctura.h"
+// #include "estructura.h"
 
 // Obj* root;
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "./stuctura.h"
+#include "./estructura.h"
 
 // Función para obtener la altura de un nodo
 int height(NodeEntry *N) {

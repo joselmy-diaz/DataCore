@@ -1,4 +1,4 @@
-#include "stuctura.h"
+#include "estructura.h"
 #include "DataCore.h"
 
 // inicial  valores de la tamaño del array

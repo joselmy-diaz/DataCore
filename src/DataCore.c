@@ -1,5 +1,5 @@
 #include "./DataCore.h"
-#include "stuctura.h"
+#include "estructura.h"
 #include "CoreTypes.h" 
 #include <stdatomic.h>
 #include <sched.h>

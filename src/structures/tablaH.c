@@ -1,9 +1,9 @@
-#include "./stuctura.h"
+#include "./estructura.h"
 
 
 // Inicializar la tabla hash
 Obj *initTH(int size) {
-    ObjTebleH *table = (ObjTebleH *)malloc(sizeof(ObjTebleH));
+    ObjTableH *table = (ObjTableH *)malloc(sizeof(ObjTableH));
     if (!table) return NULL;
     table->obj.type = TYPE_HASH_TABLE;
     table->obj.reference = 0;
@@ -16,7 +16,7 @@ Obj *initTH(int size) {
 // Insertar un elemento en la tabla
 bool insertTH(Obj *table, Obj* obj) {
     Entry* new_entry = (Entry*)obj;
-    ObjTebleH *hashTable = (ObjTebleH *)table;
+    ObjTableH *hashTable = (ObjTableH *)table;
     if (hashTable->entries == NULL) return false;
     unsigned int index = hash(new_entry->key) % hashTable->length;
     if (!new_entry) return false;
@@ -28,7 +28,7 @@ bool insertTH(Obj *table, Obj* obj) {
 
 // Buscar un elemento en la tabla
 Obj* searchTH(Obj *table, const char *key) {
-    ObjTebleH *hashTable = (ObjTebleH *)table;
+    ObjTableH *hashTable = (ObjTableH *)table;
     if (hashTable->entries == NULL) return NULL;
     unsigned int index = hash(key) % hashTable->length;
     Entry *entry = hashTable->entries[index];
@@ -41,7 +41,7 @@ Obj* searchTH(Obj *table, const char *key) {
 
 /* --- Recorrer --- */
 void hash_foreach(Obj *table, void (*callback)(Entry*)) {
-    ObjTebleH *hashTable = (ObjTebleH *)table;
+    ObjTableH *hashTable = (ObjTableH *)table;
     if (hashTable->entries == NULL) return;
     for (int i = 0; i < hashTable->length; i++) {
         Entry *entry = hashTable->entries[i];
@@ -62,7 +62,7 @@ void freeEnT(Entry* entry){
 
 // Liberar la memoria de la tabla
 bool freeTH (Obj *table) {
-    ObjTebleH *hashTable = (ObjTebleH *)table;
+    ObjTableH *hashTable = (ObjTableH *)table;
     if (hashTable == NULL) return true;
     for (int i = 0; i < hashTable->length; i++) {
         if (hashTable->entries[i] != NULL) {

@@ -1,5 +1,5 @@
 #include "DataCore.h"
-#include "stuctura.h"
+#include "estructura.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdalign.h>

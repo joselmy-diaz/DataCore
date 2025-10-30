@@ -2,7 +2,7 @@
 #define INTERFACE_H
 
 #include "obj.h"
-// #include "stuctura.h"
+// #include "estructura.h"
 
 enum {
     IS_BOOL = 1,

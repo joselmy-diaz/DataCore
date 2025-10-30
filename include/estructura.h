@@ -1,5 +1,5 @@
-#ifndef STUCTU_H
-#define STUCTU_H
+#ifndef ESTRUCTURA_H
+#define ESTRUCTURA_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +10,7 @@ typedef struct {
     ObjR obj;
     int length;
     Entry **entries;
-} ObjTebleH;
+} ObjTableH;
 
 // Estructura del nodo del árbol AVL
 typedef struct NodeEntry {

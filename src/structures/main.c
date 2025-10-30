@@ -1,4 +1,4 @@
-#include "./stuctura.h"
+#include "./estructura.h"
 
 //================ Función para inicializar un nuevo objeto ==================
 // de tipo Obj con un valor específico
