@@ -1,6 +1,6 @@
 #include "obj.h"
 #include "DataCore.h"
-#include "estructura.h"
+#include "structure.h"
 #include <stdio.h>
 
 

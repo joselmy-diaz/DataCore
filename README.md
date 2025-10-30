@@ -88,7 +88,7 @@ Para usar DataCore en tu proyecto, incluye los siguientes headers:
 
 ```c
 #include "DataCore.h"      // API principal y funciones de manejo de objetos
-#include "estructura.h"     // Estructuras de datos (tablas hash, árboles, arrays)
+#include "structure.h"      // Estructuras de datos (tablas hash, árboles, arrays)
 #include "obj.h"            // Definiciones de tipos de objetos
 ```
 

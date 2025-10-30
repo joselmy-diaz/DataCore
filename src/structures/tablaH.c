@@ -1,4 +1,4 @@
-#include "./estructura.h"
+#include "./structure.h"
 
 
 // Inicializar la tabla hash
