@@ -19,7 +19,7 @@ El propósito principal de DataCore es facilitar la manipulación de datos en es
 
 - **CMake** (versión 3.10 o superior)
 - **Compilador C** compatible (GCC, Clang, etc.)
-- **Bibliotecas estándar de C** (stdio, stdlib, string, pthread para corrutinas)
+- **Bibliotecas estándar de C** (stdio, stdlib, string, pthread para corutinas)
 
 ## Instalación
 
