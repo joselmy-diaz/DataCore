@@ -13,17 +13,84 @@ El propósito principal de DataCore es facilitar la manipulación de datos en es
 - **Gestión de memoria**: Incluye funciones para liberar memoria de manera segura y eficiente.
 - **Creación de objetos**: Proporciona métodos para inicializar objetos y entradas clave-valor.
 
+## Dependencias
+
+**DataCore** requiere las siguientes dependencias para compilar:
+
+- **CMake** (versión 3.10 o superior)
+- **Compilador C** compatible (GCC, Clang, etc.)
+- **Bibliotecas estándar de C** (stdio, stdlib, string, pthread para corrutinas)
+
 ## Instalación
 
 ```bash
 # Clona este repositorio
 git clone https://github.com/joselmy-diaz/DataCore.git
+cd DataCore
 
+# Compila el proyecto con CMake
+mkdir build
+cd build
+cmake ..
+make
+
+# (Opcional) Instala la librería en el sistema
+cd ..
+./install.sh
+
+# También puedes especificar directorios de instalación personalizados:
+./install.sh --lib-dir /ruta/personalizada/lib --include-dir /ruta/personalizada/include
+```
+
+## Compilación y Enlace
+
+### Compilación estática
+
+Para enlazar tu aplicación con la librería estática de DataCore:
+
+```bash
+# Compilar tu aplicación con DataCore
+gcc -o mi_programa mi_programa.c -I/ruta/a/DataCore/include -L/ruta/a/DataCore/build -lDataCore
+
+# O si instalaste la librería en el sistema:
+gcc -o mi_programa mi_programa.c -lDataCore
+```
+
+### Compilación dinámica
+
+Si generas una librería dinámica (.so), puedes enlazarla así:
+
+```bash
+# Compilar con librería dinámica
+gcc -o mi_programa mi_programa.c -I/ruta/a/DataCore/include -L/ruta/a/DataCore/build -lDataCore -Wl,-rpath,/ruta/a/DataCore/build
+```
+
+### Uso con CMake
+
+Puedes integrar DataCore en tu proyecto CMake:
+
+```cmake
+# En tu CMakeLists.txt
+include_directories(/ruta/a/DataCore/include)
+link_directories(/ruta/a/DataCore/build)
+
+add_executable(mi_programa mi_programa.c)
+target_link_libraries(mi_programa DataCore)
 ```
 
 ## Cómo utilizarlo
 
 A continuación, se describe cómo utilizar las principales funcionalidades de **DataCore** con ejemplos prácticos basados en el archivo `DataCoreT.c`.
+
+### Archivos de Cabecera Principales
+
+Para usar DataCore en tu proyecto, incluye los siguientes headers:
+
+```c
+#include "DataCore.h"      // API principal y funciones de manejo de objetos
+#include "estructura.h"     // Estructuras de datos (tablas hash, árboles, arrays)
+#include "obj.h"            // Definiciones de tipos de objetos
+```
 
 ### 1. Inicialización de Objetos
 
