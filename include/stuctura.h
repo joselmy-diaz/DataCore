@@ -14,8 +14,7 @@ typedef struct {
 
 // Estructura del nodo del árbol AVL
 typedef struct NodeEntry {
-    ObjR obj;
-    Entry* data;
+    Entry data;
     struct NodeEntry* left;
     struct NodeEntry* right;
     int height;
@@ -25,6 +24,7 @@ typedef struct NodeEntry {
 typedef struct {
     ObjR obj;
     struct NodeEntry* root;
+    int size;
 } ObjTree;
 
 
@@ -39,23 +39,30 @@ typedef struct {
 unsigned int hash(const char *key);
 
 Obj* newObj(ObjType type, As* as);
+Obj* newNumberF (float NumF);
+Obj* newNumber (int Num);
+Obj* newTime ();
+void setTimeFuture(Obj* obj, int segundos, int nanos);
+double getTimeSeconds(Obj* obj);
+Obj* newEntry(const char* key, Obj* data);
+
 Obj* newObjString(char * str);
 bool setObjString (Obj* objString, const char* str);
+void StringPush (Obj* obj1, const char* str);
 int getStringSize(Obj* obj);
-char* getString(Obj* obj);
-Entry* newEntry(const char* key, Obj* data);
+const char* getString(Obj* obj);
 
 void freeEn (Entry* entry);
 
 Obj* initTH(int size);
 Obj *searchTH(Obj *table, const char *key);
-void NewFunction(Entry *entry);
-bool insertTH(Obj*table, Entry* data);
+bool insertTH(Obj*table, Obj* data);
 bool freeTH(Obj *table);
 
 Obj *initTR();
 Obj* searchTree(Obj* obj, const char *key);
-bool insertAVL(Obj* objT, Entry* data);
+bool insertAVL(Obj* objT, Obj* data);
+int getTreeSize (Obj* obj);
 NodeEntry* newNode(Entry* data);
 void preOrder(NodeEntry *root);
 bool freeTR(Obj* objT);
@@ -64,7 +71,8 @@ Obj *initArray(int8_t size);
 bool insertIArray (ObjArray* objL, int index, Obj* data);
 bool insertArray(Obj* objL, Obj* data);
 int getArraySize(Obj* objL);
-Obj* searchArray(Obj* objL, int index);;
+Obj* searchArray(Obj* objL, int index);
+Obj* removeArray(Obj* obj, int index);
 Obj* popArray(Obj* obj);
 bool freeArray(Obj* objL);
 

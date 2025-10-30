@@ -36,27 +36,12 @@ bool isTreeOrTable(Obj* obj) {
     if (objL->array == NULL || (objL->length - objL->free) < 1) return false;
     Obj* data1 = objL->array[0];
     if (data1 != NULL) {
-        if (data1->type == TYPE_AVL_TREE) return true;
-        else if (data1->type == TYPE_HASH_TABLE) return true;
+        if (GetType(data1) == TYPE_AVL_TREE) return true;
+        else if (GetType(data1) == TYPE_HASH_TABLE) return true;
     }
     return false;
 }
 
-
-// Inserta un elemento en la lista
-bool insertLByKey(Obj* obj, Entry* data) {
-    ObjArray* objL = (ObjArray*)obj;
-    if (1 <= objL->length - objL->free) {
-        if (isTreeOrTable(obj)) {
-            Obj* data1 = objL->array[0];
-            // return insertD(data1, data);
-        } else {
-            insertArray(objL, data->data);
-        }
-        //printf("No se puede insectar en este tipo de estructura 2");
-    } else return false;
-    return true;
-}
 
 bool insertIArray (ObjArray* objL, int index, Obj* data) {
     if (objL == NULL || data == NULL) return false;
@@ -110,27 +95,34 @@ bool freeArray(Obj* obj) {
     return true;
 }
 
+// Elimina un elemento del array
+Obj* removeArray(Obj* obj, int index) {
+    ObjArray* objL = (ObjArray*)obj;
+    if (objL == NULL || objL->array == NULL) return NULL;
+
+    int size = getArraySize(obj);
+    if (size < 1) return NULL;
+
+    if (index < 0) {
+        index = size + index; // índice desde el final
+    }
+    if (index < 0 || index >= size) return NULL;
+
+    if (isTreeOrTable(obj) && index == 0) return NULL; // no eliminar estructura interna
+
+    Obj* removed = searchArray(obj, index);
+
+    // desplazar elementos hacia la izquierda
+    for (int i = index; i < size - 1; i++) {
+        objL->array[i] = objL->array[i + 1];
+    }
+    objL->array[size - 1] = NULL;
+    objL->free++;
+
+    return removed;
+}
 
 // Elimina y devuelve el último elemento del array (operación pop)
 Obj* popArray(Obj* obj) {
-    ObjArray* objL = (ObjArray*)obj;
-    if (objL == NULL || objL->array == NULL) return NULL;
-    
-    // Calcular el índice del último elemento
-    int lastIndex = objL->length - objL->free - 1;
-    
-    // Verificar que haya elementos para hacer pop
-    if (lastIndex < 0) return NULL;
-    
-    // Si es un array con un árbol o tabla hash en la posición 0, ajustar el índice
-    if (isTreeOrTable(obj) && lastIndex == 0) return NULL; // No permitir eliminar la estructura interna
-    
-    // Obtener el último elemento
-    Obj* lastElement = objL->array[lastIndex];
-    
-    // Eliminar la referencia al elemento (sin liberarlo)
-    objL->array[lastIndex] = NULL;
-    objL->free++;
-    
-    return lastElement;
+    return removeArray(obj, -1);
 }

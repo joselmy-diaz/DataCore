@@ -1,7 +1,7 @@
 #include "DataCore.h"
 
 typedef struct {
-    bool (*insert)(Obj*, Entry*);
+    bool (*insert)(Obj*, Obj*);
     Obj* (*search)(Obj*, const char*);
     bool (*free)(Obj*);
 } ObjOps;

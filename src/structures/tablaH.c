@@ -10,11 +10,12 @@ Obj *initTH(int size) {
     table->entries = (Entry **)calloc(size, sizeof(Entry *));
     table->length = size;
     for (int i = 0; i < size; i++) {table->entries[i] = NULL; }
-    return &table->obj;
+    return (Obj*)table;
 }
 
 // Insertar un elemento en la tabla
-bool insertTH(Obj *table, Entry* new_entry) {
+bool insertTH(Obj *table, Obj* obj) {
+    Entry* new_entry = (Entry*)obj;
     ObjTebleH *hashTable = (ObjTebleH *)table;
     if (hashTable->entries == NULL) return false;
     unsigned int index = hash(new_entry->key) % hashTable->length;

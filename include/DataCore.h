@@ -23,4 +23,7 @@ Obj* searchDIndex (Obj* obj, int index);
 char getTypeCategory(char res);
 bool freeObjs(Obj* obj);
 
+void bloqueaObj (Obj* obj);
+void desbloqueaObj (Obj* obj);
+
 #endif // LISTA_H

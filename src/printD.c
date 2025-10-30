@@ -33,10 +33,9 @@ void recorrerNodo(NodeEntry* nodo) {
     // Primero el subárbol izquierdo
     recorrerNodo(nodo->left);
 
-    if (nodo->data != NULL) {
-        printEn(nodo->data);
-        printf("%s ,", WHITE);
-    }
+    printEn(&nodo->data);
+    printf("%s ,", WHITE);
+
     recorrerNodo(nodo->right);
 }
 
@@ -51,7 +50,7 @@ void printObj (Obj* obj){
         printf("%s%s\n", RED, "NULL");
         return;
     }
-    switch (obj->type) {
+    switch (GetType(obj)) {
         case TYPE_NULL:
             printf("%s%s\n", RED, "NULL");
             break;

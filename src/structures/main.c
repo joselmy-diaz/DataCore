@@ -20,9 +20,48 @@ Obj* newObj(ObjType type, As* as) {
     return res;
 }
 
+Obj* newNumber (int Num) {
+    Native* token = malloc(sizeof(Native));
+    if (token == NULL) return NULL;
+    token->type = TYPE_NUM;
+    token->as.Num = Num;
+    return (Obj*)token;
+}
+
+Obj* newNumberF (float NumF) {
+    Native* token = malloc(sizeof(Native));
+    if (token == NULL) return NULL;
+    token->type = TYPE_NUMFL;
+    token->as.NumF = NumF;
+    return (Obj*)token;
+}
+
+
+Obj* newTime () {
+    Obj* token = malloc(sizeof(ObjTime));
+    if (token == NULL) return NULL;
+    token->type = TYPE_TIME;
+    clock_gettime(CLOCK_MONOTONIC, &((ObjTime*)token)->time);
+    return token;
+}
+
+double getTimeSeconds(Obj* obj) {
+    if (obj == NULL || GetType(obj) != TYPE_TIME) return -1;
+    ObjTime* ot = (ObjTime*)obj;
+    return ot->time.tv_sec + (double)ot->time.tv_nsec / 1000000000.0;
+}
+// setial a un tipenpo futuro
+void setTimeFuture(Obj* obj, int segundos, int nanos) {
+    if (obj == NULL || GetType(obj) != TYPE_TIME) return;
+    ObjTime* ot = (ObjTime*)obj;
+    clock_gettime(CLOCK_MONOTONIC, &ot->time);
+    ot->time.tv_sec += segundos;
+    ot->time.tv_nsec = nanos;
+}
+
 
 // Función para inicializar el valor de un objeto de clave valor
-Entry* newEntry(const char* key, Obj* data) {
+Obj* newEntry(const char* key, Obj* data) {
     Entry* entry = (Entry*)malloc(sizeof(Entry));
     entry->obj.type = TYPE_ENTRY;
     entry->obj.reference = 0;
@@ -43,20 +82,6 @@ bool freeEntry(Entry* entry) {
 }
 
 
-bool setObjString (Obj* objString, const char* str) {
-    if (objString == NULL || objString->type != TYPE_STRING) return false;
-    ObjString* objStr = (ObjString*)objString;
-    objStr->obj.type = TYPE_STRING;
-    objStr->length = strlen(str);
-    if (objStr->length >=  objStr->capacity) { // redimensionar
-        objStr->capacity = objStr->length + 10; // +10 para el terminador nulo
-        objStr->chars = (char*)realloc(objStr->chars, objStr->capacity);
-        if (objStr->chars == NULL) return false;
-    }
-    strcpy(objStr->chars, str);
-    return true;
-}
-
 Obj* newObjString (char * str) {
     ObjString *valueObj = (ObjString*)malloc(sizeof(ObjString));
     valueObj->obj.type = TYPE_STRING;
@@ -69,8 +94,21 @@ Obj* newObjString (char * str) {
     return (Obj*)valueObj;
 }
 
-char* getString(Obj* obj) {
-    if (obj == NULL || obj->type != TYPE_STRING) return NULL;
+bool setObjString (Obj* objString, const char* str) {
+    if (objString == NULL || GetType(objString) != TYPE_STRING) return false;
+    ObjString* objStr = (ObjString*)objString;
+    objStr->length = strlen(str);
+    if (objStr->length >=  objStr->capacity) { // redimensionar
+        objStr->capacity = objStr->length + 10; // +10 para el terminador nulo
+        objStr->chars = (char*)realloc(objStr->chars, objStr->capacity);
+        if (objStr->chars == NULL) return false;
+    }
+    strcpy(objStr->chars, str);
+    return true;
+}
+
+const char* getString(Obj* obj) {
+    if (obj == NULL || GetType(obj) != TYPE_STRING) return NULL;
     ObjString* obtS = (ObjString*)obj;
     return obtS->chars;
 }
@@ -80,6 +118,22 @@ int getStringSize(Obj* obj) {
     ObjString* obtS = (ObjString*)obj;
     return obtS->length;
 }
+
+void StringPush (Obj* obj1, const char* str) {
+    const char* old = getString(obj1);
+    Obj* valueObj = newObjString((char*)str);
+    size_t len = strlen(old) + strlen(str) + 1;
+    char* buf = (char*)malloc(len);
+    if (!buf) {
+        perror("malloc");
+        return;
+    }
+    strcpy(buf, old);
+    strcat(buf, str);
+    setObjString(obj1, buf);
+    free(buf);
+}
+
 
 bool freeString(ObjString* objS) {
     if (objS->chars) free(objS->chars);
