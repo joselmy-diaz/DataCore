@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "./buffer.h"
 
 bool bufferClear(Obj* buffer) {
     if (!buffer) return false;

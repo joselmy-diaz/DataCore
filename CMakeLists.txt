@@ -26,5 +26,4 @@ add_library(${PROJECT_NAME} STATIC ${SERVER_SOURCE})
 target_include_directories(${PROJECT_NAME} PUBLIC ./include)
 
 # Configuración de pruebas
-enable_testing()
 add_subdirectory(test)
