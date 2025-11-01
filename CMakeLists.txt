@@ -16,6 +16,8 @@ set(SERVER_SOURCE
     ./src/structures/tablaH.c 
     ./src/structures/treeH.c
     ./src/structures/array.c
+    ./src/structures/buffer.c
+    ./src/structures/bufferC.c
 )
 
 # Crear la biblioteca

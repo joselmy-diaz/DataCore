@@ -1,12 +1,17 @@
 # Archivos de prueba
 add_executable(testDataCore DataCoreT.c)
-
 add_executable(Coroutine coroutine.c)
+add_executable(BufferTest bufferTest.c)
+add_executable(CircularBufferTest circularBufferTest.c)
 
 # Vincular la librería al ejecutable de prueba
 target_link_libraries(testDataCore PRIVATE DataCore)
 target_link_libraries(Coroutine PRIVATE DataCore)
+target_link_libraries(BufferTest PRIVATE DataCore)
+target_link_libraries(CircularBufferTest PRIVATE DataCore)
 
 # Agregar una prueba al sistema de pruebas de CTest
 add_test(NAME DataCore COMMAND testDataCore)
 add_test(NAME Coroutine COMMAND Coroutine)
+add_test(NAME BufferTest COMMAND BufferTest)
+add_test(NAME CircularBufferTest COMMAND CircularBufferTest)
