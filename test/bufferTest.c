@@ -28,56 +28,60 @@ void test_buffer_write_read() {
     Buffer* buf = (Buffer*)bufferObj;
     
     // Test byte operations
+    bufferResetPosition(buf);  // Start at beginning
     int8_t testByte = 42;
-    assert(bufferWriteByte(buf, testByte, 0) == true);
+    assert(bufferWriteByte(buf, testByte) == true);
     
+    bufferResetPosition(buf);  // Reset to read from beginning
     int8_t readByte;
-    assert(bufferReadByte(buf, &readByte, 0) == true);
+    assert(bufferReadByte(buf, &readByte) == true);
     assert(readByte == testByte);
     
     printf("✓ Byte write/read test passed\n");
     
     // Test integer operations
+    bufferSetPosition(buf, 10);  // Set position to 10
     int32_t testInt = 0x12345678;
-    assert(bufferWriteInt(buf, testInt, 10) == true);
+    assert(bufferWriteInt(buf, testInt) == true);
     
+    bufferSetPosition(buf, 10);  // Reset position to read from same place
     int32_t readInt;
-    assert(bufferReadInt(buf, &readInt, 10) == true);
+    assert(bufferReadInt(buf, &readInt) == true);
     assert(readInt == testInt);
     
     printf("✓ Integer write/read test passed\n");
     
     // Test string operations
+    bufferSetPosition(buf, 20);  // Set position to 20
     const char* testString = "Hello Buffer!";
-    assert(bufferWriteString(buf, testString, 20) == true);
+    assert(bufferWriteString(buf, testString) == true);
     
+    bufferSetPosition(buf, 20);  // Reset position to read from same place
     char readString[50];
-    assert(bufferReadString(buf, readString, sizeof(readString), 20) == true);
+    assert(bufferReadString(buf, readString, sizeof(readString)) == true);
     assert(strcmp(readString, testString) == 0);
     
     printf("✓ String write/read test passed\n");
     
-    // Test generic data operations
-    struct {
+    // Test generic data write/read
+    struct TestData {
         int a;
         float b;
         char c;
-    } testData = {100, 3.14f, 'X'};
+    } testData = {123, 45.67f, 'X'};
     
-    assert(bufferWrite(buf, &testData, sizeof(testData), 100) == true);
+    bufferSetPosition(buf, 100);  // Set position to 100
+    assert(bufferWrite(buf, &testData, sizeof(testData)) == true);
     
-    struct {
-        int a;
-        float b;
-        char c;
-    } readData;
+    struct TestData readData;
+    memset(&readData, 0, sizeof(readData));
     
-    assert(bufferRead(buf, &readData, sizeof(readData), 100) == true);
+    // Read back the data
+    bufferSetPosition(buf, 100);  // Reset position to read from same place
+    assert(bufferRead(buf, &readData, sizeof(readData)) == true);
     assert(readData.a == testData.a);
     assert(readData.b == testData.b);
     assert(readData.c == testData.c);
-    
-    printf("✓ Generic data write/read test passed\n");
 }
 
 void test_buffer_utility_functions() {
@@ -90,9 +94,10 @@ void test_buffer_utility_functions() {
     assert(bufferFill(buf, 0xAA) == true);
     
     // Verify fill worked
+    bufferResetPosition(buf);
     int8_t testByte;
     for (int i = 0; i < 10; i++) {
-        assert(bufferReadByte(buf, &testByte, i) == true);
+        assert(bufferReadByte(buf, &testByte) == true);
         assert(testByte == (int8_t)0xAA);
     }
     
@@ -109,8 +114,9 @@ void test_buffer_utility_functions() {
     assert(bufferCopy(buf, srcBuf, 0, 50, 25) == true);
     
     // Verify copy
+    bufferSetPosition(buf, 50);
     for (int i = 50; i < 75; i++) {
-        assert(bufferReadByte(buf, &testByte, i) == true);
+        assert(bufferReadByte(buf, &testByte) == true);
         assert(testByte == (int8_t)0x55);
     }
     
@@ -127,20 +133,22 @@ void test_buffer_edge_cases() {
     int8_t testByte = 99;
     
     // Write at last valid position
-    assert(bufferWriteByte(buf, testByte, 9) == true);
+    bufferSetPosition(buf, 9);
+    assert(bufferWriteByte(buf, testByte) == true);
     
-    // Try to write beyond buffer
-    assert(bufferWriteByte(buf, testByte, 10) == false);
+    // Try to write beyond buffer - should fail (position is now at 10)
+    assert(bufferWriteByte(buf, testByte) == false);
     
     // Try to write with size overflow
     char largeData[20];
-    assert(bufferWrite(buf, largeData, sizeof(largeData), 0) == false);
+    bufferResetPosition(buf);
+    assert(bufferWrite(buf, largeData, sizeof(largeData)) == false);
     
     printf("✓ Boundary condition tests passed\n");
     
     // Test null pointer handling
-    assert(bufferWrite(NULL, &testByte, 1, 0) == false);
-    assert(bufferRead(buf, NULL, 1, 0) == false);
+    assert(bufferWrite(NULL, &testByte, 1) == false);
+    assert(bufferRead(buf, NULL, 1) == false);
     assert(bufferIsValid(NULL) == false);
     
     printf("✓ Null pointer tests passed\n");
@@ -155,7 +163,8 @@ void test_buffer_file_operations() {
     // Fill buffer with test data
     const char* testData = "This is test data for file operations!";
     size_t dataLen = strlen(testData);
-    assert(bufferWrite(buf, testData, dataLen, 0) == true);
+    bufferResetPosition(buf);
+    assert(bufferWrite(buf, testData, dataLen) == true);
     
     // Write buffer to file
     const char* filename = "/tmp/buffer_test.dat";
@@ -171,7 +180,8 @@ void test_buffer_file_operations() {
     
     // Verify data
     char readData[100];
-    assert(bufferRead(readBuf, readData, dataLen, 0) == true);
+    bufferResetPosition(readBuf);
+    assert(bufferRead(readBuf, readData, dataLen) == true);
     readData[dataLen] = '\0'; // Null terminate for comparison
     
     assert(strcmp(readData, testData) == 0);

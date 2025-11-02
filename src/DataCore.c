@@ -1,18 +1,21 @@
 #include "./DataCore.h"
 #include "structure.h"
-#include "CoreTypes.h" 
 #include <stdatomic.h>
 #include <sched.h>
+#include <stdint.h>
 
-char getTypeCategory(char res) {
+int8_t getTypeCategory(int8_t res) {
     if (res <= TYPE_NUMFL) {
-        if (res <= TYPE_BOOL_T) res = IS_BOOL;
-        else res = IS_NATIVE;
-    } else {
-        res = IS_OBJ;
+        if (res <= TYPE_BOOL_T) return IS_BOOL;
+        return IS_NATIVE;
     }
-    return res;
+    return IS_OBJ;
 }
+
+ObjOps ObjOpsList[] = {
+    {insertAVL, searchTree, freeTR},
+    {insertTH, searchTH, freeTH},
+};
 
 #define MASCARA_LOCK 0x80 // 10000000 binario
 #define MASCARA_DATOS 0x7F

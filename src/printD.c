@@ -89,7 +89,7 @@ void printObj (Obj* obj){
             break;
         case TYPE_HASH_TABLE:
             printf("%s{", BLUE);
-            hash_foreach(obj, TablaP);
+            // hash_foreach(obj, TablaP);
             printf("%s}", BLUE);
             break;
         case TYPE_AVL_TREE:

@@ -12,15 +12,16 @@
 typedef struct {
     ObjR obj;
     int8_t *buffer;
-    int size;
+    size_t size;
+    size_t position;
 } Buffer;
 
 typedef struct {
     ObjR obj;
     int8_t *buffer;
     size_t size;
-    int16_t head;
-    int16_t tail;
+    size_t head;
+    size_t tail;
 } BufferCircular;
 
 // Core buffer management functions
@@ -32,20 +33,25 @@ bool readFileBuffer(Buffer* buf, const char* path);
 bool writeFileBuffer(const Buffer* buf, const char* path);
 
 // Generic read/write functions for normal buffer
-bool bufferWrite(Buffer* buf, const void* data, size_t dataSize, size_t position);
-bool bufferRead(Buffer* buf, void* data, size_t dataSize, size_t position);
+bool bufferWrite(Buffer* buf, const void* data, size_t dataSize);
+bool bufferRead(Buffer* buf, void* data, size_t dataSize);
 bool bufferAppend(Buffer* buf, const void* data, size_t dataSize);
 
 // Specific data type functions
-bool bufferWriteByte(Buffer* buf, int8_t byte, size_t position);
-bool bufferReadByte(Buffer* buf, int8_t* byte, size_t position);
-bool bufferWriteInt(Buffer* buf, int32_t value, size_t position);
-bool bufferReadInt(Buffer* buf, int32_t* value, size_t position);
-bool bufferWriteString(Buffer* buf, const char* str, size_t position);
-bool bufferReadString(Buffer* buf, char* str, size_t maxLen, size_t position);
+bool bufferWriteByte(Buffer* buf, int8_t byte);
+bool bufferReadByte(Buffer* buf, int8_t* byte);
+bool bufferWriteInt(Buffer* buf, int32_t value);
+bool bufferReadInt(Buffer* buf, int32_t* value);
+bool bufferWriteString(Buffer* buf, const char* str);
+bool bufferReadString(Buffer* buf, char* str, size_t maxLen);
+
+bool bufferFree(Obj* buffer);
 
 // Utility functions
 size_t bufferGetSize(Buffer* buf);
+size_t bufferGetPosition(Buffer* buf);
+bool bufferSetPosition(Buffer* buf, size_t position);
+bool bufferResetPosition(Buffer* buf);
 bool bufferIsValid(Buffer* buf);
 bool bufferFill(Buffer* buf, int8_t value);
 bool bufferCopy(Buffer* dest, Buffer* src, size_t srcPos, size_t destPos, size_t length);

@@ -1,27 +1,7 @@
 #include "./buffer.h"
 
-bool bufferClear(Obj* buffer) {
-    if (!buffer) return false;
-    
-    if (buffer->type == TYPE_BUFFER_CIRCULAR) {
-        BufferCircular* cb = (BufferCircular*)buffer;
-        cb->head = 0;
-        cb->tail = 0;
-        for (size_t i = 0; i < cb->size; i++) {
-            cb->buffer[i] = 0;
-        }
-    } else if (buffer->type == TYPE_BUFFER) {
-        Buffer* bd = (Buffer*)buffer;
-        for (size_t i = 0; i < bd->size; i++) {
-            bd->buffer[i] = 0;
-        }
-    } else {
-        return false;
-    }
-    return true;
-}
+#define MAX_ZISE 123
 
-// Inicializa el buffer
 Obj* bufferCreate(bool circular, int size) {
     if (circular) {
         BufferCircular* cb = (BufferCircular*)malloc(sizeof(BufferCircular));
@@ -31,12 +11,12 @@ Obj* bufferCreate(bool circular, int size) {
         }
         cb->obj.type = TYPE_BUFFER_CIRCULAR;
         cb->buffer = (int8_t*)malloc(sizeof(int8_t) * size);
+        cb->size = size;
         if (!cb->buffer) {
             free(cb);
             fprintf(stderr, "Memory allocation for buffer data failed\n");
             return NULL;
         }
-        cb->size = size;
         cb->head = 0;
         cb->tail = 0;
         bufferClear((Obj*)cb);
@@ -49,16 +29,40 @@ Obj* bufferCreate(bool circular, int size) {
         }
         cb->obj.type = TYPE_BUFFER;
         cb->buffer = (int8_t*)malloc(sizeof(int8_t) * size);
+        cb->size = size;
+        cb->position = 0;  // Initialize position
         if (!cb->buffer) {
             free(cb);
             fprintf(stderr, "Memory allocation for buffer data failed\n");
             return NULL;
         }
-        cb->size = size;
         bufferClear((Obj*)cb);
         return (Obj*)cb;
     }
 }
+
+bool bufferClear(Obj* buffer) {
+    if (!buffer) return false;
+    
+    if (buffer->type == TYPE_BUFFER_CIRCULAR) {
+        BufferCircular* cb = (BufferCircular*)buffer;
+        cb->head = 0;
+        cb->tail = 0;
+        for (size_t i = 0; i < cb->size; i++) {
+            cb->buffer[i] = 0;
+        }
+    } else if (buffer->type == TYPE_BUFFER) {
+        Buffer* bd = (Buffer*)buffer;
+        bd->position = 0;  // Reset position when clearing
+        for (size_t i = 0; i < bd->size; i++) {
+            bd->buffer[i] = 0;
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
+
 
 // Helper: read an entire file into a Buffer (responsibility: file -> buffer)
 bool BufferResize(Buffer* buf, size_t newSize) {
@@ -132,21 +136,23 @@ bool writeFileBuffer(const Buffer* buf, const char* path) {
 
 // Basic generic functions for buffer read/write operations
 
-// Write data to buffer at specified position
-bool bufferWrite(Buffer* buf, const void* data, size_t dataSize, size_t position) {
+// Write data to buffer at current position
+bool bufferWrite(Buffer* buf, const void* data, size_t dataSize) {
     if (!buf || !data || dataSize == 0) return false;
-    if (position + dataSize > buf->size) return false;
+    if (buf->position + dataSize > buf->size) return false;
     
-    memcpy(buf->buffer + position, data, dataSize);
+    memcpy(buf->buffer + buf->position, data, dataSize);
+    buf->position += dataSize;  // Advance position after writing
     return true;
 }
 
-// Read data from buffer at specified position
-bool bufferRead(Buffer* buf, void* data, size_t dataSize, size_t position) {
+// Read data from buffer at current position
+bool bufferRead(Buffer* buf, void* data, size_t dataSize) {
     if (!buf || !data || dataSize == 0) return false;
-    if (position + dataSize > buf->size) return false;
+    if (buf->position + dataSize > buf->size) return false;
     
-    memcpy(data, buf->buffer + position, dataSize);
+    memcpy(data, buf->buffer + buf->position, dataSize);
+    buf->position += dataSize;  // Advance position after reading
     return true;
 }
 
@@ -154,55 +160,78 @@ bool bufferRead(Buffer* buf, void* data, size_t dataSize, size_t position) {
 bool bufferAppend(Buffer* buf, const void* data, size_t dataSize) {
     if (!buf || !data || dataSize == 0) return false;
     
-    // Find the first available position (assuming buffer tracks used size)
-    // For simplicity, we'll append at the end of current buffer size
-    // In a real implementation, you might want to track the current write position
-    return bufferWrite(buf, data, dataSize, 0); // This should be improved with position tracking
+    // Write at current position (which tracks the end of written data)
+    return bufferWrite(buf, data, dataSize);
 }
 
-// Write a single byte to buffer at position
-bool bufferWriteByte(Buffer* buf, int8_t byte, size_t position) {
-    return bufferWrite(buf, &byte, sizeof(int8_t), position);
+// Write a single byte to buffer at current position
+bool bufferWriteByte(Buffer* buf, int8_t byte) {
+    return bufferWrite(buf, &byte, sizeof(int8_t));
 }
 
-// Read a single byte from buffer at position
-bool bufferReadByte(Buffer* buf, int8_t* byte, size_t position) {
-    return bufferRead(buf, byte, sizeof(int8_t), position);
+// Read a single byte from buffer at current position
+bool bufferReadByte(Buffer* buf, int8_t* byte) {
+    return bufferRead(buf, byte, sizeof(int8_t));
 }
 
-// Write an integer to buffer at position (little endian)
-bool bufferWriteInt(Buffer* buf, int32_t value, size_t position) {
-    return bufferWrite(buf, &value, sizeof(int32_t), position);
+// Write an integer to buffer at current position (little endian)
+bool bufferWriteInt(Buffer* buf, int32_t value) {
+    return bufferWrite(buf, &value, sizeof(int32_t));
 }
 
-// Read an integer from buffer at position (little endian)
-bool bufferReadInt(Buffer* buf, int32_t* value, size_t position) {
-    return bufferRead(buf, value, sizeof(int32_t), position);
+// Read an integer from buffer at current position (little endian)
+bool bufferReadInt(Buffer* buf, int32_t* value) {
+    return bufferRead(buf, value, sizeof(int32_t));
 }
 
-// Write a string to buffer at position
-bool bufferWriteString(Buffer* buf, const char* str, size_t position) {
+// Write a string to buffer at current position
+bool bufferWriteString(Buffer* buf, const char* str) {
     if (!str) return false;
     size_t len = strlen(str);
-    return bufferWrite(buf, str, len, position);
+    return bufferWrite(buf, str, len);
 }
 
-// Read a string from buffer at position (null-terminated)
-bool bufferReadString(Buffer* buf, char* str, size_t maxLen, size_t position) {
+// Read a string from buffer at current position (null-terminated)
+bool bufferReadString(Buffer* buf, char* str, size_t maxLen) {
     if (!str || maxLen == 0) return false;
     
     size_t i;
-    for (i = 0; i < maxLen - 1 && position + i < buf->size; i++) {
-        str[i] = buf->buffer[position + i];
-        if (str[i] == '\0') break;
+    for (i = 0; i < maxLen - 1 && buf->position + i < buf->size; i++) {
+        str[i] = buf->buffer[buf->position + i];
+        if (str[i] == '\0') {
+            buf->position += i + 1;  // Include null terminator in position advance
+            break;
+        }
     }
-    str[i] = '\0';
+    if (i == maxLen - 1) {
+        str[i] = '\0';
+        buf->position += i;
+    }
     return true;
 }
 
 // Get buffer size
 size_t bufferGetSize(Buffer* buf) {
     return buf ? buf->size : 0;
+}
+
+// Get current position in buffer
+size_t bufferGetPosition(Buffer* buf) {
+    return buf ? buf->position : 0;
+}
+
+// Set position in buffer
+bool bufferSetPosition(Buffer* buf, size_t position) {
+    if (!buf || position > buf->size) return false;
+    buf->position = position;
+    return true;
+}
+
+// Reset position to beginning of buffer
+bool bufferResetPosition(Buffer* buf) {
+    if (!buf) return false;
+    buf->position = 0;
+    return true;
 }
 
 // Check if buffer is valid
@@ -227,3 +256,19 @@ bool bufferCopy(Buffer* dest, Buffer* src, size_t srcPos, size_t destPos, size_t
     return true;
 }
 
+
+bool bufferFree(Obj* buffer) {
+    if (!buffer) return false;
+    if (buffer->type == TYPE_BUFFER_CIRCULAR) {
+        BufferCircular* cb = (BufferCircular*)buffer;
+        if (cb->buffer) free(cb->buffer);
+        free(cb);
+    } else if (buffer->type == TYPE_BUFFER) {
+        Buffer* bd = (Buffer*)buffer;
+        if (bd->buffer) free(bd->buffer);
+        free(bd);
+    } else {
+        return false;
+    }
+    return true;
+}

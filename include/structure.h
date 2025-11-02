@@ -37,6 +37,7 @@ typedef struct {
 
 
 unsigned int hash(const char *key);
+int8_t getTypeCategory(int8_t res);
 
 Obj* newObj(ObjType type, As* as);
 Obj* newNumberF (float NumF);
