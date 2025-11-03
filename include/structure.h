@@ -58,6 +58,7 @@ void freeEn (Entry* entry);
 Obj* initTH(int size);
 Obj *searchTH(Obj *table, const char *key);
 bool insertTH(Obj*table, Obj* data);
+Obj* recorrerTH(Obj *table);
 bool freeTH(Obj *table);
 
 Obj *initTR();

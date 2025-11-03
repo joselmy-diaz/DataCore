@@ -3,214 +3,162 @@
 #include <string.h>
 #include <assert.h>
 
-void test_buffer_basic_operations() {
-    printf("=== Testing Basic Buffer Operations ===\n");
+void test_buffer_creation() {
+    printf("=== Testing Buffer Creation ===\n");
     
-    // Create a normal buffer
-    Obj* bufferObj = bufferCreate(false, 1024);
+    // Test creación de buffer con tamaño válido
+    Obj* bufferObj = bufferCreate(100);
     assert(bufferObj != NULL);
+    assert(bufferObj->type == TYPE_BUFFER);
     
     Buffer* buf = (Buffer*)bufferObj;
+    assert(buf->size == 100);
+    assert(buf->head == 0);
+    assert(buf->tail == 0);
+    assert(buf->buffer != NULL);
     
-    // Test buffer validity
-    assert(bufferIsValid(buf) == true);
+    // Test buffer vacío
+    assert(buf->head == buf->tail);
     
-    // Test buffer size
-    assert(bufferGetSize(buf) == 1024);
+    bufferFree(bufferObj);
     
-    printf("✓ Buffer creation and basic checks passed\n");
+    // Test creación con tamaño 0
+    assert(bufferCreate(0) == NULL);
+    
+    printf("✓ Buffer creation tests passed\n");
 }
 
 void test_buffer_write_read() {
     printf("=== Testing Buffer Write/Read Operations ===\n");
     
-    Obj* bufferObj = bufferCreate(false, 1024);
+    Obj* bufferObj = bufferCreate(100);
     Buffer* buf = (Buffer*)bufferObj;
     
-    // Test byte operations
-    bufferResetPosition(buf);  // Start at beginning
-    int8_t testByte = 42;
-    assert(bufferWriteByte(buf, testByte) == true);
+    // Test escritura básica
+    const char* testData = "Hello, World!";
+    size_t dataLen = strlen(testData) + 1;
     
-    bufferResetPosition(buf);  // Reset to read from beginning
-    int8_t readByte;
-    assert(bufferReadByte(buf, &readByte) == true);
-    assert(readByte == testByte);
+    bool writeResult = bufferWrite(buf, testData, dataLen);
+    assert(writeResult == true);
+    assert(buf->head == dataLen);
     
-    printf("✓ Byte write/read test passed\n");
+    // Test lectura básica
+    char readBuffer[20] = {0};
+    bool readResult = bufferRead(buf, readBuffer, dataLen);
+    assert(readResult == true);
+    assert(strcmp(readBuffer, testData) == 0);
     
-    // Test integer operations
-    bufferSetPosition(buf, 10);  // Set position to 10
-    int32_t testInt = 0x12345678;
-    assert(bufferWriteInt(buf, testInt) == true);
-    
-    bufferSetPosition(buf, 10);  // Reset position to read from same place
-    int32_t readInt;
-    assert(bufferReadInt(buf, &readInt) == true);
-    assert(readInt == testInt);
-    
-    printf("✓ Integer write/read test passed\n");
-    
-    // Test string operations
-    bufferSetPosition(buf, 20);  // Set position to 20
-    const char* testString = "Hello Buffer!";
-    assert(bufferWriteString(buf, testString) == true);
-    
-    bufferSetPosition(buf, 20);  // Reset position to read from same place
-    char readString[50];
-    assert(bufferReadString(buf, readString, sizeof(readString)) == true);
-    assert(strcmp(readString, testString) == 0);
-    
-    printf("✓ String write/read test passed\n");
-    
-    // Test generic data write/read
-    struct TestData {
-        int a;
-        float b;
-        char c;
-    } testData = {123, 45.67f, 'X'};
-    
-    bufferSetPosition(buf, 100);  // Set position to 100
-    assert(bufferWrite(buf, &testData, sizeof(testData)) == true);
-    
-    struct TestData readData;
-    memset(&readData, 0, sizeof(readData));
-    
-    // Read back the data
-    bufferSetPosition(buf, 100);  // Reset position to read from same place
-    assert(bufferRead(buf, &readData, sizeof(readData)) == true);
-    assert(readData.a == testData.a);
-    assert(readData.b == testData.b);
-    assert(readData.c == testData.c);
+    bufferFree(bufferObj);
+    printf("✓ Buffer write/read tests passed\n");
 }
 
-void test_buffer_utility_functions() {
-    printf("=== Testing Buffer Utility Functions ===\n");
+void test_buffer_clear() {
+    printf("=== Testing Buffer Clear Operation ===\n");
     
-    Obj* bufferObj = bufferCreate(false, 100);
+    Obj* bufferObj = bufferCreate(100);
     Buffer* buf = (Buffer*)bufferObj;
     
-    // Test fill function
-    assert(bufferFill(buf, 0xAA) == true);
+    // Escribir algunos datos
+    const char* testData = "Test Data";
+    bufferWrite(buf, testData, strlen(testData) + 1);
     
-    // Verify fill worked
-    bufferResetPosition(buf);
-    int8_t testByte;
-    for (int i = 0; i < 10; i++) {
-        assert(bufferReadByte(buf, &testByte) == true);
-        assert(testByte == (int8_t)0xAA);
-    }
+    // Limpiar buffer
+    bool clearResult = bufferClear(bufferObj);
+    assert(clearResult == true);
+    assert(buf->head == 0);
+    assert(buf->tail == 0);
     
-    printf("✓ Buffer fill test passed\n");
+    // Verificar que los datos se limpiaron
+    char firstByte = buf->buffer[0];
+    assert(firstByte == 0);
     
-    // Test buffer copy
-    Obj* srcBufferObj = bufferCreate(false, 50);
-    Buffer* srcBuf = (Buffer*)srcBufferObj;
-    
-    // Fill source with different pattern
-    assert(bufferFill(srcBuf, 0x55) == true);
-    
-    // Copy data
-    assert(bufferCopy(buf, srcBuf, 0, 50, 25) == true);
-    
-    // Verify copy
-    bufferSetPosition(buf, 50);
-    for (int i = 50; i < 75; i++) {
-        assert(bufferReadByte(buf, &testByte) == true);
-        assert(testByte == (int8_t)0x55);
-    }
-    
-    printf("✓ Buffer copy test passed\n");
+    bufferFree(bufferObj);
+    printf("✓ Buffer clear tests passed\n");
 }
 
-void test_buffer_edge_cases() {
-    printf("=== Testing Buffer Edge Cases ===\n");
+void test_buffer_resize() {
+    printf("=== Testing Buffer Resize Operation ===\n");
     
-    Obj* bufferObj = bufferCreate(false, 10);
+    Obj* bufferObj = bufferCreate(50);
     Buffer* buf = (Buffer*)bufferObj;
     
-    // Test boundary conditions
-    int8_t testByte = 99;
+    // Escribir datos
+    const char* testData = "Initial Data";
+    size_t dataLen = strlen(testData) + 1;
+    bufferWrite(buf, testData, dataLen);
     
-    // Write at last valid position
-    bufferSetPosition(buf, 9);
-    assert(bufferWriteByte(buf, testByte) == true);
+    // Aumentar tamaño
+    bool resizeResult = BufferResize(buf, 100);
+    assert(resizeResult == true);
+    assert(buf->size == 100);
+    assert(buf->head == dataLen);
     
-    // Try to write beyond buffer - should fail (position is now at 10)
-    assert(bufferWriteByte(buf, testByte) == false);
+    // Verificar que los datos se mantienen
+    char readBuffer[20] = {0};
+    buf->tail = 0;
+    bufferRead(buf, readBuffer, dataLen);
+    assert(strcmp(readBuffer, testData) == 0);
     
-    // Try to write with size overflow
-    char largeData[20];
-    bufferResetPosition(buf);
-    assert(bufferWrite(buf, largeData, sizeof(largeData)) == false);
+    // Reducir tamaño
+    resizeResult = BufferResize(buf, 25);
+    assert(resizeResult == true);
+    assert(buf->size == 25);
     
-    printf("✓ Boundary condition tests passed\n");
-    
-    // Test null pointer handling
-    assert(bufferWrite(NULL, &testByte, 1) == false);
-    assert(bufferRead(buf, NULL, 1) == false);
-    assert(bufferIsValid(NULL) == false);
-    
-    printf("✓ Null pointer tests passed\n");
+    bufferFree(bufferObj);
+    printf("✓ Buffer resize tests passed\n");
 }
 
 void test_buffer_file_operations() {
     printf("=== Testing Buffer File Operations ===\n");
     
-    Obj* bufferObj = bufferCreate(false, 1024);
+    Obj* bufferObj = bufferCreate(100);
     Buffer* buf = (Buffer*)bufferObj;
     
-    // Fill buffer with test data
-    const char* testData = "This is test data for file operations!";
-    size_t dataLen = strlen(testData);
-    bufferResetPosition(buf);
-    assert(bufferWrite(buf, testData, dataLen) == true);
+    // Escribir datos en el buffer
+    const char* testData = "Test file data";
+    bufferWrite(buf, testData, strlen(testData) + 1);
     
-    // Write buffer to file
-    const char* filename = "/tmp/buffer_test.dat";
-    assert(writeFileBuffer(buf, filename) == true);
+    // Escribir a archivo
+    bool writeResult = writeFileBuffer(buf, "test.tmp");
+    assert(writeResult == true);
     
-    printf("✓ File write test passed\n");
+    // Limpiar buffer
+    bufferClear(bufferObj);
     
-    // Create new buffer and read from file
-    Obj* readBufferObj = bufferCreate(false, 1024);
-    Buffer* readBuf = (Buffer*)readBufferObj;
+    // Leer de archivo
+    bool readResult = readFileBuffer(buf, "test.tmp");
+    assert(readResult == true);
     
-    assert(readFileBuffer(readBuf, filename) == true);
+    // Verificar datos
+    char readBuffer[20] = {0};
+    bufferRead(buf, readBuffer, strlen(testData) + 1);
+    assert(strcmp(readBuffer, testData) == 0);
     
-    // Verify data
-    char readData[100];
-    bufferResetPosition(readBuf);
-    assert(bufferRead(readBuf, readData, dataLen) == true);
-    readData[dataLen] = '\0'; // Null terminate for comparison
+    // Limpiar
+    remove("test.tmp");
+    bufferFree(bufferObj);
     
-    assert(strcmp(readData, testData) == 0);
-    
-    printf("✓ File read test passed\n");
-    
-    // Clean up
-    remove(filename);
+    printf("✓ Buffer file operation tests passed\n");
 }
 
 int main() {
     printf("Starting Buffer Tests...\n\n");
     
-    test_buffer_basic_operations();
+    test_buffer_creation();
     printf("\n");
     
     test_buffer_write_read();
     printf("\n");
     
-    test_buffer_utility_functions();
+    test_buffer_clear();
     printf("\n");
     
-    test_buffer_edge_cases();
+    test_buffer_resize();
     printf("\n");
     
     test_buffer_file_operations();
     printf("\n");
     
     printf("🎉 All buffer tests passed successfully!\n");
-    
     return 0;
 }

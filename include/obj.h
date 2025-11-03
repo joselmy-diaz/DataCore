@@ -27,7 +27,6 @@ enum {
   TYPE_HASH_TABLE = 10,
   TYPE_FUNCTION = 11,
   TYPE_BUFFER = 12,
-  TYPE_BUFFER_CIRCULAR = 13,
 };
 
 typedef struct {

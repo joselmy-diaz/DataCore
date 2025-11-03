@@ -1,11 +1,11 @@
 #include "buffer.h"
 
 // Helper function to check if buffer is full
-static bool isBufferFull(BufferCircular* cb) {
+static bool isBufferFull(Buffer* cb) {
     return ((cb->head + 1) % cb->size) == cb->tail;
 }
 
-bool BufferCWrite (BufferCircular* cb, void* ptr, size_t count) {
+bool BufferCWrite (Buffer* cb, void* ptr, size_t count) {
     if (!cb || !ptr) return false;
     for (size_t i = 0; i < count; i++) {
         if (!BufferCPut(cb, ((int8_t*)ptr)[i], false)) return false;
@@ -13,7 +13,7 @@ bool BufferCWrite (BufferCircular* cb, void* ptr, size_t count) {
     return true;
 }
 
-bool BufferCPut (BufferCircular *cb, int8_t item, bool atStart) {
+bool BufferCPut (Buffer *cb, int8_t item, bool atStart) {
     if (!cb || isBufferFull(cb)) return false;  // Buffer full, can't add
 
     if (atStart) {
@@ -29,12 +29,12 @@ bool BufferCPut (BufferCircular *cb, int8_t item, bool atStart) {
 }
 
 // Verifica si el búfer está vacío
-bool BufferCEmpty(BufferCircular *cb) {
+bool BufferCEmpty(Buffer *cb) {
     if (!cb) return true;
     return (cb->head == cb->tail);
 }
 
-bool BufferCAdd (BufferCircular *cb, void* item, size_t length, bool atStart) {
+bool BufferCAdd (Buffer *cb, void* item, size_t length, bool atStart) {
     if (!cb || !item) return false;
     for (size_t i = 0; i < length; i++) {
         if (!BufferCPut(cb, ((int8_t*)item)[i], atStart)) return false;
@@ -43,13 +43,13 @@ bool BufferCAdd (BufferCircular *cb, void* item, size_t length, bool atStart) {
 }
 
 // Returns the number of elements currently in the buffer
-int16_t BufferCSize(BufferCircular *cb) {
+int16_t BufferCSize(Buffer *cb) {
     if (!cb) return 0;
     return (cb->head - cb->tail + cb->size) % cb->size;
 }
 
 // Read a single byte from the buffer (removes it)
-bool BufferCReadByte(BufferCircular* cb, int8_t* byte) {
+bool BufferCReadByte(Buffer* cb, int8_t* byte) {
     if (!cb || !byte || BufferCEmpty(cb)) return false;
     
     *byte = cb->buffer[cb->tail];
@@ -57,7 +57,7 @@ bool BufferCReadByte(BufferCircular* cb, int8_t* byte) {
     return true;
 }
 
-bool BufferCRead(BufferCircular* cb, void* ptr, size_t count) {
+bool BufferCRead(Buffer* cb, void* ptr, size_t count) {
     if (!cb || !ptr) return false;
     
     for (size_t i = 0; i < count; i++) {
@@ -69,7 +69,7 @@ bool BufferCRead(BufferCircular* cb, void* ptr, size_t count) {
 }
 
 // Peek at data without removing it
-bool BufferCPeek(BufferCircular* cb, void* ptr, size_t count) {
+bool BufferCPeek(Buffer* cb, void* ptr, size_t count) {
     if (!cb || !ptr || count == 0) return false;
     
     size_t tempTail = cb->tail;
@@ -82,7 +82,7 @@ bool BufferCPeek(BufferCircular* cb, void* ptr, size_t count) {
 }
 
 // Get available space in buffer
-size_t BufferCSpace(BufferCircular* cb) {
+size_t BufferCSpace(Buffer* cb) {
     if (!cb) return 0;
     return cb->size - BufferCSize(cb) - 1; // -1 to distinguish full from empty
 }

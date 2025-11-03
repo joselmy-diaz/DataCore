@@ -40,16 +40,18 @@ Obj* searchTH(Obj *table, const char *key) {
 }
 
 /* --- Recorrer --- */
-void hash_foreach(Obj *table, void (*callback)(Entry*)) {
+Obj* recorrerTH(Obj *table) {
     ObjTableH *hashTable = (ObjTableH *)table;
-    if (hashTable->entries == NULL) return;
+    Obj *arr = initArray(5);
+    if (hashTable->entries == NULL) return NULL;
     for (int i = 0; i < hashTable->length; i++) {
         Entry *entry = hashTable->entries[i];
         while (entry != NULL) {
-            callback(entry);
+            insertArray(arr, entry);
             entry = entry->next;
         }
     }
+    return arr;
 }
 
 void freeEnT(Entry* entry){
