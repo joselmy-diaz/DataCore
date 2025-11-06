@@ -166,7 +166,7 @@ bool bufferWrite(Buffer* buf, const void* data, size_t dataSize) {
  */
 bool bufferRead(Buffer* buf, void* data, size_t dataSize) {
     if (!buf || !data || dataSize == 0) return false;
-    if (buf->tail + dataSize > buf->head) return false;
+    if (buf->tail + dataSize > buf->size) return false;
 
     memcpy(data, buf->buffer + buf->tail, dataSize);
     buf->tail += dataSize;

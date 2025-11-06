@@ -43,7 +43,7 @@ bool BufferResize(Buffer* buf, size_t newSize);
 bool BufferCRead(Buffer* buf, void* data, size_t dataSize);
 bool BufferCWrite (Buffer* cb, void* ptr, size_t count);
 bool BufferCEmpty(Buffer *cb);
-int16_t BufferCSize(Buffer *cb);
+size_t BufferCSize(Buffer *cb);
 bool BufferCAdd(Buffer *cb, void* item, size_t length, bool atStart);
 bool BufferCPut(Buffer *cb, int8_t item, bool atStart);
 bool BufferCPeek(Buffer *cb, void* ptr, size_t count);

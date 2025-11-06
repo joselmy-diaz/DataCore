@@ -43,7 +43,7 @@ bool BufferCAdd (Buffer *cb, void* item, size_t length, bool atStart) {
 }
 
 // Returns the number of elements currently in the buffer
-int16_t BufferCSize(Buffer *cb) {
+size_t BufferCSize(Buffer *cb) {
     if (!cb) return 0;
     return (cb->head - cb->tail + cb->size) % cb->size;
 }

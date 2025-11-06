@@ -78,9 +78,9 @@ int main(void) {
     pthread_t watcher_thread;
 
 
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 10; i++) {
         Obj* objTime = newTime();
-        setTimeFuture(objTime, 50 - i, 1);
+        setTimeFuture(objTime, 10 - i, 1);
         watcherObjPush(objTime, newObjString("hola time"));
         watcherObjPush(varS, varS);
     }
