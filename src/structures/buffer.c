@@ -27,8 +27,7 @@ Obj* bufferCreate(size_t size) {
     }
 
     cb->size = size;
-    cb->head = 0;
-    cb->tail = 0;
+    memset(cb->buffer, 0, cb->size);
     bufferClear((Obj*)cb);
     return (Obj*)cb;
 }
@@ -41,10 +40,8 @@ Obj* bufferCreate(size_t size) {
 bool bufferClear(Obj* buffer) {
     if (!buffer || buffer->type != TYPE_BUFFER) return false;
     Buffer* cb = (Buffer*)buffer;
-    
     cb->head = 0;
     cb->tail = 0;
-    memset(cb->buffer, 0, cb->size);
     return true;
 }
 
@@ -62,11 +59,7 @@ bool BufferResize(Buffer* buf, size_t newSize) {
     
     buf->buffer = newBuf;
     buf->size = newSize;
-    
-    // Ajustar head y tail si están fuera del nuevo tamaño
-    if (buf->head > newSize) buf->head = newSize;
-    if (buf->tail > newSize) buf->tail = newSize;
-    
+
     return true;
 }
 
