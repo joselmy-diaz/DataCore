@@ -101,13 +101,13 @@ void TablaP(Entry* nodo) {
  */
 void printObj(Obj* obj) {
     if (obj == NULL) {
-        printf("%s%s\n", RED, NULL_STR);
+        printf("%s%s", RED, NULL_STR);
         return;
     }
 
     switch (GetType(obj)) {
         case TYPE_NULL:
-            printf("%s%s\n", RED, NULL_STR);
+            printf("%s%s", RED, NULL_STR);
             break;
             
         case TYPE_BOOL_F:
@@ -135,7 +135,6 @@ void printObj(Obj* obj) {
             printEn(entry);
             break;
         }
-            
         case TYPE_STRING: {
             const char* str = getString(obj);
             if (str) {
@@ -145,7 +144,11 @@ void printObj(Obj* obj) {
             }
             break;
         }
-            
+        case TYPE_TIME: {
+            ObjTime* ot = (ObjTime*)obj;
+            printf("%sTime(sec: %ld, nsec: %ld)", CYAN, ot->time.tv_sec, ot->time.tv_nsec);
+            break;
+        }
         case TYPE_ARRAY:
             printf("%s[", WHITE);
             printArray((ObjArray*)obj);
@@ -157,7 +160,10 @@ void printObj(Obj* obj) {
             Obj* arr = recorrerTH(obj);
             if (arr) {
                 printArray((ObjArray*)arr);
-                freeArray(arr);
+                // Solo liberar la estructura del array, no sus contenidos
+                ObjArray* objL = (ObjArray*)arr;
+                if (objL->array) free(objL->array);
+                free(objL);
             }
             printf("%s}", BLUE);
             break;
@@ -186,10 +192,6 @@ void printObj(Obj* obj) {
  * @param obj Puntero al objeto a imprimir
  */
 void printObjf(Obj* obj) {
-    if (obj == NULL) {
-        printf("%s%s\n", RED, NULL_STR);
-        return;
-    }
     printObj(obj);
     printf("\n%s", RESET);  // Usamos RESET en lugar de WHITE para restaurar el color por defecto
 }

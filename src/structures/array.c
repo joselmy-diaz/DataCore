@@ -48,6 +48,19 @@ bool insertIArray (ObjArray* objL, int index, Obj* data) {
     if (index < 0 || index >= objL->length) return false;
     if (objL->array[index] != NULL) freeObjs(objL->array[index]);
     assignData(&objL->array[index], data);
+    
+    // Si es una Entry, incrementar la referencia de los datos internos si son objetos
+    if (GetType(data) == TYPE_ENTRY) {
+        Entry* entry = (Entry*)data;
+        if (entry->data) {
+            char cat = getTypeCategory(GetType(entry->data));
+            if (cat == IS_OBJ) {
+                ObjR* objData = (ObjR*)entry->data;
+                objData->reference++;
+            }
+        }
+    }
+    
     return true;
 }
 
@@ -87,10 +100,21 @@ Obj* searchArray(Obj* obj, int index) {
 bool freeArray(Obj* obj) {
     ObjArray* objL = (ObjArray*)obj;
     if (objL == NULL) return false;
-    for (int i = 0; i < objL->length - objL->free; i++) {
-        if(objL->array[i] != NULL) freeObjs(objL->array[i]);
+    
+    // Liberar todos los elementos del array
+    int size = objL->length - objL->free;
+    for (int i = 0; i < size; i++) {
+        if(objL->array[i] != NULL) {
+            freeObjs(objL->array[i]);
+            objL->array[i] = NULL;
+        }
     }
-    free(objL->array);
+    
+    // Liberar el array y la estructura
+    if (objL->array) {
+        free(objL->array);
+        objL->array = NULL;
+    }
     free(objL);
     return true;
 }

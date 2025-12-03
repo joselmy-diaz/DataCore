@@ -1,6 +1,5 @@
 #include "waiter.h"
 
-
 Obj* listWaiters;
 
 void watcherObjInit() {
@@ -17,7 +16,19 @@ void watcherObjCreate(Obj* watcher, Obj* this, IsReadyFunc IsReady) {
 }
 
 /* -------- Watcher (Scheduler) -------- */
-static _Atomic int running = 1;
+_Atomic int running = 1;
+
+bool isWatcher(Waiter* asion, double actual_segundos) {
+    if (IsBlock(asion->watcher)) return false; // liberasion por bloqueo
+    if (GetType(asion->watcher) == TYPE_TIME) {        // liberasion por esperas de tiempo
+        double tiempo_obj_segundos = getTimeSeconds(asion->watcher);
+        if (actual_segundos - tiempo_obj_segundos >= 0) {
+            freeTime(asion->watcher);
+        } else return false;
+    }
+
+    return true;
+}
 
 void* waitHandle(void* arg) {
     struct timespec tiempo_actual;
@@ -29,11 +40,12 @@ void* waitHandle(void* arg) {
         for (int i = 0; i < getArraySize(listWaiters); i++) {
             Waiter* asion = (Waiter*)searchArray(listWaiters, i);
             if (asion == NULL) continue;
-
-            if (GetType(asion->watcher) == TYPE_TIME) {        // liberasion por esperas de tiempo
-                double tiempo_obj_segundos = getTimeSeconds(asion->watcher);
-                if (actual_segundos - tiempo_obj_segundos >= 0) liberateWaiter(asion, &i);
-            } else if (!IsBlock(asion->watcher)) liberateWaiter(asion, &i); // liberasion por bloqueo
+            if (!isWatcher(asion, actual_segundos)) continue;
+            asion->isReady(asion->this);
+            removeArray(listWaiters, i);
+            free(asion);
+            i--;
+            if (getArraySize(listWaiters) == 0) atomic_store(&running, 0);
         }
         nanosleep((const struct timespec[]){{0, 10000L}}, NULL);
     }
@@ -43,11 +55,4 @@ void* waitHandle(void* arg) {
 }
 
 
-void liberateWaiter(Waiter* waiter, int* i) {
-    printf("liberado bloqueo: %d : ", *i);
-    printObjf(waiter->isReady(waiter->this));
-    removeArray(listWaiters, *i);
-    (*i)--;
-    if (getArraySize(listWaiters) == 0) atomic_store(&running, 0);
-    free(waiter);
-}
+

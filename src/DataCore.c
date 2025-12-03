@@ -1,5 +1,6 @@
 #include "./DataCore.h"
 #include "structure.h"
+#include "buffer.h"
 #include <stdatomic.h>
 #include <sched.h>
 #include <stdint.h>
@@ -13,8 +14,9 @@ int8_t getTypeCategory(int8_t res) {
 }
 
 ObjOps ObjOpsList[] = {
-    {insertAVL, searchTree, freeTR},
-    {insertTH, searchTH, freeTH},
+    {insertArray, NULL, freeArray},    // TYPE_ARRAY = 8
+    {insertAVL, searchTree, freeTR},   // TYPE_AVL_TREE = 9
+    {insertTH, searchTH, freeTH},      // TYPE_HASH_TABLE = 10
 };
 
 #define MASCARA_LOCK 0x80 // 10000000 binario
@@ -39,8 +41,8 @@ void desbloqueaObj (Obj* obj) {
 
 // busca el tipo de objeto y lo iguala a la estructura de datos
 ObjOps* getOps(int8_t type) {
-    ObjOps* ops = &ObjOpsList[type - TYPE_AVL_TREE];
-    if (ops == NULL || ops->insert == NULL || ops->search == NULL || ops->free == NULL) return NULL;
+    ObjOps* ops = &ObjOpsList[type - TYPE_ARRAY];
+    if (ops == NULL || ops->free == NULL) return NULL;
     return ops;
 }
 
@@ -61,7 +63,7 @@ bool assignData(Obj** obj, Obj* data) {
     if (cat == IS_OBJ) {
         ObjR* objT = (ObjR*)data;
         objT->reference++;
-        *obj = objT;
+        *obj = (Obj*)objT;
     } else{
         Native* objT = (Native*)data;
         *obj = newObj(GetType(data), &objT->as);
@@ -92,20 +94,35 @@ bool freeObjs(Obj* obj) {
     // Asegúrate de que es un objeto válido
     ObjR* objT = (ObjR*)obj;
 
-    // Si tiene referencias activas, solo reduce el contador
-    if (objT->reference > 0) {
+    // Si tiene referencias activas (más de una), solo reduce el contador
+    if (objT->reference > 1) {
         objT->reference--;
         return true;
+    }
+    
+    // Si tiene exactamente 1 referencia, decrementa y libera
+    if (objT->reference == 1) {
+        objT->reference--;
     }
 
     // Manejo de liberación basado en el tipo de objeto
     switch (GetType(obj)) {
-        case TYPE_ENTRY:      freeEntry(obj);      break;
-        case TYPE_STRING:     freeString(obj);     break;
-        default: 
+        case TYPE_ENTRY:      return freeEntry(obj);
+        case TYPE_STRING:     return freeString(obj);
+        case TYPE_BUFFER:     return bufferFree(obj);
+        case TYPE_TIME:       free(obj); return true;
+        case TYPE_ARRAY:
+        case TYPE_AVL_TREE:
+        case TYPE_HASH_TABLE: {
             ObjOps* ops = getOps(GetType(obj));
-            if (ops != NULL) ops->free(obj); // Tipo desconocido
-        break;
+            if (ops != NULL && ops->free != NULL) {
+                return ops->free(obj);
+            }
+            break;
+        }
+        default:
+            fprintf(stderr, "Warning: Unknown object type %d\n", GetType(obj));
+            break;
     }
-    return true;
+    return false;
 }

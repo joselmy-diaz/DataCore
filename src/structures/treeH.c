@@ -58,13 +58,38 @@ NodeEntry *leftRotate(NodeEntry *x) {
 NodeEntry* insertAVLH(NodeEntry* node, Entry* data, int reHash) {
     if (node == NULL) {
         NodeEntry* newNode = (NodeEntry*)malloc(sizeof(NodeEntry));
+        
+        // Copiar los datos de la Entry - el árbol mantiene su propia copia de Entry
         newNode->data.obj.type = TYPE_ENTRY;
-        assignData((Obj**)&newNode->data.data, data->data);
         newNode->data.key = strdup(data->key);
         if (newNode->data.key == NULL) fprintf(stderr, "Memory allocation for key failed\n");
+        newNode->data.next = NULL;
+        newNode->data.data = data->data;
+
+        if (data->data) {
+            char cat = getTypeCategory(GetType(data->data));
+            if (cat == IS_OBJ) {
+                // Para objetos referenciales, compartir el puntero e incrementar referencia
+                ObjR* objData = (ObjR*)data->data;
+                objData->reference++;
+            } else if (cat == IS_NATIVE) {
+                // Para tipos nativos, crear una copia
+                Native* src = (Native*)data->data;
+                Native* copy = (Native*)malloc(sizeof(Native));
+                copy->type = src->type;
+                copy->as = src->as;
+                newNode->data.data = (Obj*)copy;
+            } else if (cat == IS_BOOL) {
+                // Para booleanos, crear una copia
+                Obj* copy = (Obj*)malloc(sizeof(Obj));
+                copy->type = data->data->type;
+                newNode->data.data = copy;
+            }
+        }
+        
         newNode->left = NULL;
         newNode->right = NULL;
-        newNode->height = 1; // nuevo nodo es inicialmente agregado al árbol
+        newNode->height = 1;
         return newNode;
     }
 
@@ -162,6 +187,18 @@ void freeNode(NodeEntry* node) {
     if (node == NULL) return;
     freeNode(node->left);
     freeNode(node->right);
+    
+    // Liberar el contenido de la Entry dentro del nodo
+    if (node->data.key) {
+        free(node->data.key);
+        node->data.key = NULL;
+    }
+    if (node->data.data) {
+        int8_t data_type = GetType(node->data.data);
+        freeObjs(node->data.data); // Esto decrementa la referencia del dato
+        node->data.data = NULL;
+    }
+    
     free(node);
 }
 

@@ -15,12 +15,35 @@ Obj *initTH(int size) {
 
 // Insertar un elemento en la tabla
 bool insertTH(Obj *table, Obj* obj) {
-    Entry* new_entry = (Entry*)obj;
+    Entry* source_entry = (Entry*)obj;
     ObjTableH *hashTable = (ObjTableH *)table;
-    if (hashTable->entries == NULL) return false;
+    if (hashTable->entries == NULL || !source_entry) return false;
+    
+    // Crear una copia de la Entry para la tabla hash
+    Entry* new_entry = newEntry(source_entry->key, source_entry->data);
+    
+    if (source_entry->data) {
+        char cat = getTypeCategory(GetType(source_entry->data));
+        if (cat == IS_OBJ) {
+            // Para objetos referenciales, compartir el puntero e incrementar referencia
+            ObjR* objData = (ObjR*)source_entry->data;
+            objData->reference++;
+        } else if (cat == IS_NATIVE) {
+            // Para tipos nativos, crear una copia
+            Native* src = (Native*)source_entry->data;
+            Native* copy = (Native*)malloc(sizeof(Native));
+            copy->type = src->type;
+            copy->as = src->as;
+            new_entry->data = (Obj*)copy;
+        } else if (cat == IS_BOOL) {
+            // Para booleanos, crear una copia
+            Obj* copy = (Obj*)malloc(sizeof(Obj));
+            copy->type = source_entry->data->type;
+            new_entry->data = copy;
+        }
+    }
+    
     unsigned int index = hash(new_entry->key) % hashTable->length;
-    if (!new_entry) return false;
-
     new_entry->next = hashTable->entries[index];
     hashTable->entries[index] = new_entry;
     return true;
@@ -44,10 +67,17 @@ Obj* recorrerTH(Obj *table) {
     ObjTableH *hashTable = (ObjTableH *)table;
     Obj *arr = initArray(5);
     if (hashTable->entries == NULL) return NULL;
+    ObjArray* objL = (ObjArray*)arr;
     for (int i = 0; i < hashTable->length; i++) {
         Entry *entry = hashTable->entries[i];
         while (entry != NULL) {
-            insertArray(arr, entry);
+            // Insertar directamente sin incrementar referencias (solo para visualización)
+            if (objL->free < 1) {
+                initvaluesArray(objL, true);
+            }
+            size_t index = objL->length - objL->free;
+            objL->free--;
+            objL->array[index] = (Obj*)entry;
             entry = entry->next;
         }
     }
@@ -56,9 +86,21 @@ Obj* recorrerTH(Obj *table) {
 
 void freeEnT(Entry* entry){
     if (entry == NULL) return;
-    if (entry->next != NULL) freeEnT(entry->next);
-    if (entry->key) free(entry->key);
-    if (entry->data) freeObjs(entry->data);
+    // Primero liberar el siguiente nodo en la cadena
+    if (entry->next != NULL) {
+        freeEnT(entry->next);
+        entry->next = NULL;
+    }
+    // Liberar la key (copia local)
+    if (entry->key) {
+        free(entry->key);
+        entry->key = NULL;
+    }
+    // Liberar/decrementar los datos compartidos
+    if (entry->data) {
+        freeObjs(entry->data);
+        entry->data = NULL;
+    }
     free(entry);
 }
 

@@ -11,6 +11,8 @@ set(CMAKE_CXX_COMPILER "clang++")
 set(SERVER_SOURCE 
     ./src/printD.c
     ./src/hast.c 
+    ./src/logging.c
+    ./src/waiter.c 
     ./src/DataCore.c
     ./src/structures/main.c 
     ./src/structures/tablaH.c 
@@ -19,6 +21,7 @@ set(SERVER_SOURCE
     ./src/structures/buffer.c
     ./src/structures/bufferC.c
 )
+
 
 # Crear la biblioteca
 add_library(${PROJECT_NAME} STATIC ${SERVER_SOURCE})

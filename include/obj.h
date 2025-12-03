@@ -34,8 +34,8 @@ typedef struct {
 } Obj;
 
 typedef union {
-  float NumF;
-  int Num;
+  double NumF;
+  int64_t Num;
 } As;
 
 typedef struct {
@@ -61,7 +61,7 @@ typedef struct {
 } ObjString;
 
 typedef struct Entry {
-  ObjR obj;
+  Obj obj;
   char* key;
   Obj* data;
   struct Entry* next;
@@ -71,7 +71,7 @@ typedef Obj* (*Fun)(Obj*, Obj*);
 
 typedef struct {
   ObjR obj;
-  Fun fun;
+  Fun Fun;
 } ObjFun;
 
 #endif

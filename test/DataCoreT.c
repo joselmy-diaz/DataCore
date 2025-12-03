@@ -10,43 +10,33 @@
 void chargeObj(Obj* obj) {
     if (obj == NULL) return;
 
-    // Agregar las primeras 11 entradas existentes
+    // Crear e insertar entradas - NO liberar después porque el array toma propiedad
+    Obj* e1 = newEntry("data1", newObj(TYPE_BOOL_F, NULL));
+    Obj* e2 = newEntry("data2", newObjString("Hola mundo1"));
+    Obj* e3 = newEntry("data3", newObj(TYPE_BOOL_T, NULL));
+    Obj* e4 = newEntry("data4", newObjString("Hola"));
 
-    Entry* e1 = newEntry("data1", newObj(TYPE_BOOL_F, NULL));
-    Entry* e2 = newEntry("data2", newObjString("Hola mundo1"));
-    Entry* e3 = newEntry("data3", newObj(TYPE_BOOL_T, NULL));
-    Entry* e4 = newEntry("data4", newObjString("Hola"));
-
-    // // Insertar las primeras 11 entradas
     insertArray(obj, e1);
-    freeObjs(e1);
     insertArray(obj, e2);
-    freeObjs(e2);
     insertArray(obj, e3);
-    freeObjs(e3);
     insertArray(obj, e4);
-    freeObjs(e4);
 
     // Agregar más datos dinámicamente
     for (int i = 5; i <= 10; i++) {
-        char key[32]; // Increase buffer size to handle larger numbers safely
-        snprintf(key, sizeof(key), "data%d", i); // Ensure format string is correct
+        char key[32];
+        snprintf(key, sizeof(key), "data%d", i);
 
+        Obj* entry = NULL;
         if (i % 3 == 0) {
             As asValue = { .Num = i * 2 };
-            Entry* entry = newEntry(key, newObj(TYPE_NUM, &asValue));
-            insertArray(obj, entry);
-            freeObjs(entry);
+            entry = newEntry(key, newObj(TYPE_NUM, &asValue));
         } else if (i % 3 == 1) {
             As asValue = { .NumF = i * 1.3 };
-            Entry* entry = newEntry(key, newObj(TYPE_NUMFL, &asValue));
-            insertArray(obj, entry);
-            freeObjs(entry);
+            entry = newEntry(key, newObj(TYPE_NUMFL, &asValue));
         } else {
-            Entry* entry = newEntry(key, newObjString("Texto dinámico "));
-            insertArray(obj, entry);
-            freeObjs(entry);
+            entry = newEntry(key, newObjString("Texto dinámico "));
         }
+        insertArray(obj, entry);
     }
 }
 
@@ -127,9 +117,11 @@ int main(int argc, char const *argv[]) {
     // Liberar memoria
     printf("\nLiberando memoria...\n");
     bool res = freeObjs(lis);
-    freeObjs(tree);
+    if (!res) printf("Error al liberar lis.\n");
+    
     freeObjs(table);
-    if (!res)printf("Estructura no encontrada para liberar.");
+    freeObjs(tree);
+    
     printf("\nMedición del tiempo total...\n");
     end = clock();
     cpu_time_used = ((double)(end - startA)) / CLOCKS_PER_SEC;

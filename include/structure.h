@@ -42,9 +42,11 @@ int8_t getTypeCategory(int8_t res);
 Obj* newObj(ObjType type, As* as);
 Obj* newNumberF (float NumF);
 Obj* newNumber (int Num);
+double getNumber(Obj* obj);
 Obj* newTime ();
 void setTimeFuture(Obj* obj, int segundos, int nanos);
 double getTimeSeconds(Obj* obj);
+bool freeTime(Obj* objT);
 Obj* newEntry(const char* key, Obj* data);
 
 Obj* newObjString(char * str);
@@ -70,6 +72,7 @@ void preOrder(NodeEntry *root);
 bool freeTR(Obj* objT);
 
 Obj *initArray(int8_t size);
+bool initvaluesArray(ObjArray* objL, bool isTree);
 bool insertIArray (ObjArray* objL, int index, Obj* data);
 bool insertArray(Obj* objL, Obj* data);
 int getArraySize(Obj* objL);

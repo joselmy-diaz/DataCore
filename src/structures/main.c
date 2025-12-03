@@ -36,13 +36,28 @@ Obj* newNumberF (float NumF) {
     return (Obj*)token;
 }
 
+double getNumber(Obj* obj) {
+    if (!obj) return 0.0;
+    int8_t type = GetType(obj);
+    if (type == TYPE_NUM) {
+        return (double)((Native*)obj)->as.Num;
+    } else if (type == TYPE_NUMFL) {
+        return (double)((Native*)obj)->as.NumF;
+    }
+    return 0.0;
+}
+
+//========================================================
+//======================= tiempo =========================
+//========================================================
 
 Obj* newTime () {
-    Obj* token = malloc(sizeof(ObjTime));
-    if (token == NULL) return NULL;
-    token->type = TYPE_TIME;
-    clock_gettime(CLOCK_MONOTONIC, &((ObjTime*)token)->time);
-    return token;
+    ObjTime* time = malloc(sizeof(ObjTime));
+    if (time == NULL) return NULL;
+    time->obj.type = TYPE_TIME;
+    time->obj.reference = 0;
+    clock_gettime(CLOCK_MONOTONIC, &time->time);
+    return (Obj*)time;
 }
 
 double getTimeSeconds(Obj* obj) {
@@ -59,12 +74,16 @@ void setTimeFuture(Obj* obj, int segundos, int nanos) {
     ot->time.tv_nsec = nanos;
 }
 
+bool freeTime(Obj* objT) {
+    free(objT);
+    return true;
+}
+
 
 // Función para inicializar el valor de un objeto de clave valor
 Obj* newEntry(const char* key, Obj* data) {
     Entry* entry = (Entry*)malloc(sizeof(Entry));
     entry->obj.type = TYPE_ENTRY;
-    entry->obj.reference = 0;
     entry->next = NULL;
     entry->key = strdup(key);
     entry->data = data;
@@ -74,9 +93,15 @@ Obj* newEntry(const char* key, Obj* data) {
 
 bool freeEntry(Entry* entry) {
     if (entry == NULL) return false;
-    if (entry->key) free(entry->key);
-    if (entry->data) freeObjs(entry->data);  // liberar el objeto de datos
-    if (entry->next) freeObjs(entry->next);  // liberar el siguiente objeto
+    if (entry->key) {
+        free(entry->key);
+        entry->key = NULL;
+    }
+    if (entry->data) {
+        freeObjs(entry->data);
+        entry->data = NULL;
+    }
+    // No liberar entry->next aquí ya que se maneja por separado en tablas hash
     free(entry);
     return true;
 }

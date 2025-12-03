@@ -1,16 +1,16 @@
 #ifndef WAITER_H
 #define WAITER_H
-#include <pthread.h>
+#include <stdatomic.h>
 #include "obj.h"
 #include "DataCore.h"
-#include "Serializer.h"
 #include "buffer.h"
+
 // Instrucciones de la Máquina Virtual (VM)
 // Cada instrucción ocupa 1 byte en el bytecode
 
 #define REG_COUNT 16
 
-typedef Obj* (*IsReadyFunc)(Obj*);
+typedef void (*IsReadyFunc)(Obj*);
 
 typedef struct Waiter {
     ObjR obj;
@@ -19,6 +19,7 @@ typedef struct Waiter {
     Obj* this;
 } Waiter;
 
+extern _Atomic int running;
 extern Obj* listWaiters;
 
 void watcherObjInit();
