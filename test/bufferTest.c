@@ -20,7 +20,7 @@ void test_buffer_creation() {
     // Test buffer vacío
     assert(buf->head == buf->tail);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     
     // Test creación con tamaño 0
     assert(bufferCreate(0) == NULL);
@@ -48,7 +48,7 @@ void test_buffer_write_read() {
     assert(readResult == true);
     assert(strcmp(readBuffer, testData) == 0);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Buffer write/read tests passed\n");
 }
 
@@ -72,7 +72,7 @@ void test_buffer_clear() {
     char firstByte = buf->buffer[0];
     assert(firstByte == 0);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Buffer clear tests passed\n");
 }
 
@@ -104,7 +104,7 @@ void test_buffer_resize() {
     assert(resizeResult == true);
     assert(buf->size == 25);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Buffer resize tests passed\n");
 }
 
@@ -136,7 +136,7 @@ void test_buffer_file_operations() {
     
     // Limpiar
     remove("test.tmp");
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     
     printf("✓ Buffer file operation tests passed\n");
 }

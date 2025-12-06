@@ -13,7 +13,7 @@ typedef uint8_t _Atomic ObjType;
 #define IsBlock(x) (atomic_load(&x->type) & 0x80)
 
 
-enum {
+typedef enum {
   TYPE_NULL = 0,
   TYPE_BOOL_F = 1,
   TYPE_BOOL_T = 2,
@@ -27,7 +27,7 @@ enum {
   TYPE_HASH_TABLE = 10,
   TYPE_FUNCTION = 11,
   TYPE_BUFFER = 12,
-};
+} TypeObjs;
 
 typedef struct {
    ObjType type;

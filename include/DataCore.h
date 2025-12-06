@@ -3,6 +3,7 @@
 
 #include "obj.h"
 #include "structure.h"
+#include "buffer.h"
 
 enum {
     IS_BOOL = 1,
@@ -10,14 +11,25 @@ enum {
     IS_OBJ = 3
 };
 
+typedef bool (*FreeFn)(Obj*);
+
+#define MAX_TYPES 32
+#define OBJ_TYPES_X \
+    X(TYPE_ENTRY,      freeEntry) \
+    X(TYPE_STRING,     freeString) \
+    X(TYPE_BUFFER,     freeBuffer) \
+    X(TYPE_ARRAY,      freeArray) \
+    X(TYPE_AVL_TREE,   freeTR) \
+    X(TYPE_HASH_TABLE, freeTH) 
+
+
+extern FreeFn destructorTable[MAX_TYPES];
+
+
 typedef struct {
     bool (*insert)(Obj*, Obj*);
     Obj* (*search)(Obj*, const char*);
-    bool (*free)(Obj*);
 } ObjOps;
-
-
-extern ObjOps ObjOpsList[];
 
 
 void hash_foreach(Obj *table, void (*callback)(Entry*));

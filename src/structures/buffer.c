@@ -180,7 +180,7 @@ size_t bufferGetSize(Buffer* buf) {
  * @param buffer Buffer a liberar
  * @return true si la operación fue exitosa
  */
-bool bufferFree(Obj* buffer) {
+bool freeBuffer(Obj* buffer) {
     if (!buffer || buffer->type != TYPE_BUFFER) return false;
     
     Buffer* cb = (Buffer*)buffer;

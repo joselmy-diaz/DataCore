@@ -91,7 +91,8 @@ Obj* newEntry(const char* key, Obj* data) {
 }
 
 
-bool freeEntry(Entry* entry) {
+bool freeEntry(Obj* obj) {
+    Entry* entry = (Entry*)obj;
     if (entry == NULL) return false;
     if (entry->key) {
         free(entry->key);
@@ -160,7 +161,8 @@ void StringPush (Obj* obj1, const char* str) {
 }
 
 
-bool freeString(ObjString* objS) {
+bool freeString(Obj* obj) {
+    ObjString* objS = (ObjString*)obj;
     if (objS->chars) free(objS->chars);
     free(objS);
     return true;

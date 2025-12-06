@@ -35,9 +35,9 @@ typedef struct {
     int8_t free;
 } ObjArray;
 
-
 unsigned int hash(const char *key);
 int8_t getTypeCategory(int8_t res);
+
 
 Obj* newObj(ObjType type, As* as);
 Obj* newNumberF (float NumF);
@@ -54,8 +54,9 @@ bool setObjString (Obj* objString, const char* str);
 void StringPush (Obj* obj1, const char* str);
 int getStringSize(Obj* obj);
 const char* getString(Obj* obj);
+bool freeString(Obj* obj);
+bool freeEntry(Obj* obj);
 
-void freeEn (Entry* entry);
 
 Obj* initTH(int size);
 Obj *searchTH(Obj *table, const char *key);
@@ -81,7 +82,5 @@ Obj* removeArray(Obj* obj, int index);
 Obj* popArray(Obj* obj);
 bool freeArray(Obj* objL);
 
-bool freeString(ObjString* obj);
-bool freeEntry(Entry* entry);
 
 #endif

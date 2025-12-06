@@ -30,7 +30,7 @@ void test_circular_buffer_creation() {
     assert(BufferCSize(cb) == 0);
     assert(BufferCSpace(cb) == 9); // size - 1 for full detection
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Circular buffer creation test passed\n");
 }
 
@@ -51,7 +51,7 @@ void test_circular_buffer_basic_operations() {
     assert(readByte == testByte);
     assert(BufferCEmpty(cb) == true);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Circular buffer basic operations test passed\n");
 }
 
@@ -82,7 +82,7 @@ void test_circular_buffer_wrap_around() {
     assert(data[1] == 2);
     assert(data[2] == 42);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Circular buffer wrap around test passed\n");
 }
 
@@ -108,7 +108,7 @@ void test_circular_buffer_full_conditions() {
     // Now we should be able to write again
     assert(BufferCPut(cb, 42, false) == true);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Circular buffer full conditions test passed\n");
 }
 
@@ -132,7 +132,7 @@ void test_circular_buffer_peek() {
     // Verify data is still in buffer
     assert(BufferCSize(cb) == 3);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Circular buffer peek test passed\n");
 }
 
@@ -156,7 +156,7 @@ void test_circular_buffer_at_start() {
     assert(data[1] == 1);
     assert(data[2] == 2);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Circular buffer add at start test passed\n");
 }
 
@@ -179,7 +179,7 @@ void test_circular_buffer_edge_cases() {
     // Test peeking beyond available data
     assert(BufferCPeek(cb, &data, 1) == false);
     
-    bufferFree(bufferObj);
+    freeBuffer(bufferObj);
     printf("✓ Circular buffer edge cases test passed\n");
 }
 

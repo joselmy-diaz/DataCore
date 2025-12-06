@@ -1,5 +1,4 @@
-#include "./DataCore.h"
-#include "structure.h"
+#include "DataCore.h"
 #include "buffer.h"
 #include <stdatomic.h>
 #include <sched.h>
@@ -14,9 +13,9 @@ int8_t getTypeCategory(int8_t res) {
 }
 
 ObjOps ObjOpsList[] = {
-    {insertArray, NULL, freeArray},    // TYPE_ARRAY = 8
-    {insertAVL, searchTree, freeTR},   // TYPE_AVL_TREE = 9
-    {insertTH, searchTH, freeTH},      // TYPE_HASH_TABLE = 10
+    {insertArray, NULL},       // TYPE_ARRAY = 8
+    {insertAVL, searchTree},   // TYPE_AVL_TREE = 9
+    {insertTH, searchTH},      // TYPE_HASH_TABLE = 10
 };
 
 #define MASCARA_LOCK 0x80 // 10000000 binario
@@ -39,21 +38,23 @@ void desbloqueaObj (Obj* obj) {
 }
 
 
-// busca el tipo de objeto y lo iguala a la estructura de datos
-ObjOps* getOps(int8_t type) {
-    ObjOps* ops = &ObjOpsList[type - TYPE_ARRAY];
-    if (ops == NULL || ops->free == NULL) return NULL;
-    return ops;
-}
+
 
 bool insertD(Obj* obj, Entry* data) {
     if (obj == NULL || getTypeCategory(GetType(obj)) != IS_OBJ) return false;
+    TypeObjs type = GetType(obj);
+    ObjOps ops = ObjOpsList[type - TYPE_ARRAY];
+    if (ops.insert == NULL) return false;
+    return ops.insert(obj, data);
+}
 
-    ObjOps* ops = getOps(GetType(obj));
-    if (ops != NULL) {
-        ops->insert(obj, data);
-    }
-    return true;
+// Busca un elemento en la lista
+Obj* searchD (Obj* obj, const char *key) {
+    if (obj == NULL || getTypeCategory(GetType(obj)) != IS_OBJ) return NULL;
+    TypeObjs type = GetType(obj);
+    ObjOps ops = ObjOpsList[type - TYPE_ARRAY];
+    if (ops.search == NULL) return NULL;
+    return ops.search(obj, key);
 }
 
 // Inserta de estrutura de datos punteres si es objeto igualalo y al as sumale 1 
@@ -71,58 +72,55 @@ bool assignData(Obj** obj, Obj* data) {
     return true;
 }
 
-// Busca un elemento en la lista
-Obj* searchD (Obj* obj, const char *key) {
-    if (obj == NULL || getTypeCategory(GetType(obj)) != IS_OBJ) return NULL;
-    ObjOps* ops = getOps(GetType(obj));
-    if (ops != NULL) {
-        return ops->search(obj, key);
-    }
-}
+// ============================================================================
+// Sistema de Liberación de Memoria con Tabla de Destructores
+// ============================================================================
 
+
+FreeFn destructorTable[MAX_TYPES] = {
+    #define X(name, func) [name] = func,
+        OBJ_TYPES_X
+    #undef X
+};
+
+/**
+ * Libera un objeto y gestiona su reference counting
+ * @param obj Objeto a liberar
+ * @return true si se liberó correctamente, false en caso de error
+ */
 bool freeObjs(Obj* obj) {
     if (obj == NULL) return true;
+
+    // Paso 1: Manejar tipos sin reference counting (IS_BOOL, IS_NATIVE)
     char cat = getTypeCategory(GetType(obj));
     if (cat == IS_BOOL) {
         free(obj);
         return true;
-    } else if (cat == IS_NATIVE) {
+    } 
+    
+    if (cat == IS_NATIVE) {
         free((Native*)obj);
         return true;
     }
 
-    // Asegúrate de que es un objeto válido
     ObjR* objT = (ObjR*)obj;
-
-    // Si tiene referencias activas (más de una), solo reduce el contador
+    // Si hay múltiples referencias, solo decrementar el contador
     if (objT->reference > 1) {
         objT->reference--;
-        return true;
+        return true; 
     }
     
-    // Si tiene exactamente 1 referencia, decrementa y libera
     if (objT->reference == 1) {
         objT->reference--;
     }
-
-    // Manejo de liberación basado en el tipo de objeto
-    switch (GetType(obj)) {
-        case TYPE_ENTRY:      return freeEntry(obj);
-        case TYPE_STRING:     return freeString(obj);
-        case TYPE_BUFFER:     return bufferFree(obj);
-        case TYPE_TIME:       free(obj); return true;
-        case TYPE_ARRAY:
-        case TYPE_AVL_TREE:
-        case TYPE_HASH_TABLE: {
-            ObjOps* ops = getOps(GetType(obj));
-            if (ops != NULL && ops->free != NULL) {
-                return ops->free(obj);
-            }
-            break;
-        }
-        default:
-            fprintf(stderr, "Warning: Unknown object type %d\n", GetType(obj));
-            break;
+    int type = GetType(obj);
+    
+    // Verificación de seguridad: tipo válido y con destructor registrado
+    if (type < 0 || type >= MAX_TYPES || destructorTable[type] == NULL) {
+        fprintf(stderr, "Warning: Unknown object type %d\n", type);
+        return false;
     }
-    return false;
+
+    // Llamar al destructor específico del tipo
+    return destructorTable[type](obj);
 }

@@ -84,8 +84,8 @@ Obj* recorrerTH(Obj *table) {
     return arr;
 }
 
-void freeEnT(Entry* entry){
-    if (entry == NULL) return;
+bool freeEnT(Entry* entry){
+    if (entry == NULL) return true;
     // Primero liberar el siguiente nodo en la cadena
     if (entry->next != NULL) {
         freeEnT(entry->next);
@@ -102,6 +102,7 @@ void freeEnT(Entry* entry){
         entry->data = NULL;
     }
     free(entry);
+    return true;
 }
 
 // Liberar la memoria de la tabla
