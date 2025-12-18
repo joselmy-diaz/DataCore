@@ -26,8 +26,8 @@ bool readFileBuffer(Buffer* buf, const char* path);
 bool writeFileBuffer(const Buffer* buf, const char* path);
 
 // Generic read/write functions for normal buffer
-bool bufferWrite(Buffer* buf, const void* data, size_t dataSize);
-bool bufferRead(Buffer* buf, void* data, size_t dataSize);
+bool bufferWrite(Buffer* restrict buf, const void* restrict data, size_t dataSize);
+bool bufferRead(Buffer* restrict buf, void* restrict data, size_t dataSize);
 
 
 bool freeBuffer(Obj* buffer);

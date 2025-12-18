@@ -5,9 +5,12 @@
 #include <stdint.h>
 
 int8_t getTypeCategory(int8_t res) {
+    static const char table[] = {
+        [0 ... TYPE_BOOL_T] = IS_BOOL,
+        [TYPE_NUM ... TYPE_NUMFL] = IS_NATIVE,
+    };
     if (res <= TYPE_NUMFL) {
-        if (res <= TYPE_BOOL_T) return IS_BOOL;
-        return IS_NATIVE;
+        return table[res];
     }
     return IS_OBJ;
 }
@@ -50,7 +53,7 @@ bool insertD(Obj* obj, Entry* data) {
 
 // Busca un elemento en la lista
 Obj* searchD (Obj* obj, const char *key) {
-    if (obj == NULL || getTypeCategory(GetType(obj)) != IS_OBJ) return NULL;
+    if (obj == NULL || !(obj->type == TYPE_HASH_TABLE || obj->type == TYPE_AVL_TREE)) return NULL;
     TypeObjs type = GetType(obj);
     ObjOps ops = ObjOpsList[type - TYPE_ARRAY];
     if (ops.search == NULL) return NULL;
@@ -91,6 +94,11 @@ FreeFn destructorTable[MAX_TYPES] = {
 bool freeObjs(Obj* obj) {
     if (obj == NULL) return true;
 
+    if ((uintptr_t)obj < 0x1000) {
+        fprintf(stderr, "Warning: Invalid pointer %p in freeObjs\n", (void*)obj);
+        return false;
+    }
+
     // Paso 1: Manejar tipos sin reference counting (IS_BOOL, IS_NATIVE)
     char cat = getTypeCategory(GetType(obj));
     if (cat == IS_BOOL) {
@@ -104,20 +112,29 @@ bool freeObjs(Obj* obj) {
     }
 
     ObjR* objT = (ObjR*)obj;
+    
+    // Verificar si el objeto ya fue liberado (reference count = 0 o negativo)
+    if (objT->reference <= 0) {
+        // Objeto ya liberado, no hacer nada
+        return true;
+    }
+    
     // Si hay múltiples referencias, solo decrementar el contador
     if (objT->reference > 1) {
         objT->reference--;
         return true; 
     }
     
+    // Última referencia: decrementar y proceder a liberar
     if (objT->reference == 1) {
         objT->reference--;
     }
+    
     int type = GetType(obj);
     
     // Verificación de seguridad: tipo válido y con destructor registrado
     if (type < 0 || type >= MAX_TYPES || destructorTable[type] == NULL) {
-        fprintf(stderr, "Warning: Unknown object type %d\n", type);
+        fprintf(stderr, "Warning: Unknown object type %d at %p (possibly corrupted memory or use-after-free)\n", type, (void*)obj);
         return false;
     }
 

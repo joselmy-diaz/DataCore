@@ -3,19 +3,22 @@
 //================ Función para inicializar un nuevo objeto ==================
 // de tipo Obj con un valor específico
 Obj* newObj(ObjType type, As* as) {
+    if (!as && getTypeCategory(type) == IS_NATIVE) return NULL;
     Obj* res = NULL;
-    char cat = getTypeCategory(type);
-    if (cat == IS_BOOL) {
-        res = (Obj*)malloc(sizeof(Obj));
-        if (!res) return NULL;
-        res->type = type;
-    } else if (cat == IS_NATIVE) {
-        if (!as) return NULL;
-        Native *objN = (Native *)malloc(sizeof(Native));
-        if (!objN) return NULL;
-        objN->type = type;
-        objN->as = *as;
-        res = (Obj*)objN;
+    switch (getTypeCategory(type)) {
+        case IS_BOOL:
+            res = (Obj*)malloc(sizeof(Obj));
+            if (res) res->type = type;
+            break;
+        case IS_NATIVE:
+            res = (Obj*)malloc(sizeof(Native));
+            if (res) {
+                ((Native*)res)->type = type;
+                ((Native*)res)->as = *as;
+            }
+            break;
+        default:
+            break;
     }
     return res;
 }

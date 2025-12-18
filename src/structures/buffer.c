@@ -141,9 +141,20 @@ bool writeFileBuffer(const Buffer* buf, const char* path) {
  * @param dataSize Tamaño de los datos
  * @return true si la operación fue exitosa
  */
-bool bufferWrite(Buffer* buf, const void* data, size_t dataSize) {
-    if (!buf || !data || dataSize == 0) return false;
-    if (buf->head + dataSize > buf->size) return false;
+bool bufferWrite(Buffer* restrict buf, const void* data, size_t dataSize) {
+    // Si no hay suficiente espacio, agrandar el buffer
+    if (buf->head + dataSize > buf->size) {
+        // Calcular nuevo tamaño: duplicar el tamaño actual o usar el necesario, lo que sea mayor
+        size_t newSize = buf->size * 2;
+        size_t requiredSize = buf->head + dataSize;
+        if (newSize < requiredSize) {
+            newSize = requiredSize;
+        }
+        
+        if (!BufferResize(buf, newSize)) {
+            return false;
+        }
+    }
 
     memcpy(buf->buffer + buf->head, data, dataSize);
     buf->head += dataSize;
@@ -157,8 +168,7 @@ bool bufferWrite(Buffer* buf, const void* data, size_t dataSize) {
  * @param dataSize Cantidad de datos a leer
  * @return true si la operación fue exitosa
  */
-bool bufferRead(Buffer* buf, void* data, size_t dataSize) {
-    if (!buf || !data || dataSize == 0) return false;
+bool bufferRead(Buffer* restrict buf, void* restrict data, size_t dataSize) {
     if (buf->tail + dataSize > buf->size) return false;
 
     memcpy(data, buf->buffer + buf->tail, dataSize);

@@ -19,7 +19,33 @@ bool insertTH(Obj *table, Obj* obj) {
     ObjTableH *hashTable = (ObjTableH *)table;
     if (hashTable->entries == NULL || !source_entry) return false;
     
-    // Crear una copia de la Entry para la tabla hash
+    // Primero verificar si la clave ya existe
+    unsigned int index = hash(source_entry->key) % hashTable->length;
+    Entry* existing = hashTable->entries[index];
+    
+    while (existing) {
+        if (strcmp(existing->key, source_entry->key) == 0) {
+            // Clave encontrada - actualizar el valor en lugar de insertar duplicado
+            if (source_entry->data) {
+                char cat = getTypeCategory(GetType(source_entry->data));
+                if (cat == IS_NATIVE) {
+                    // Para tipos nativos, siempre crear una nueva copia y reemplazar
+                    Native* src = (Native*)source_entry->data;
+                    Native* copy = (Native*)malloc(sizeof(Native));
+                    copy->type = src->type;
+                    copy->as = src->as;
+                    existing->data = (Obj*)copy;
+                } else {
+                    // Para objetos y booleanos, simplemente reemplazar
+                    existing->data = source_entry->data;
+                }
+            }
+            return true;
+        }
+        existing = existing->next;
+    }
+    
+    // No existe - crear nueva entrada
     Entry* new_entry = newEntry(source_entry->key, source_entry->data);
     
     if (source_entry->data) {
@@ -43,7 +69,6 @@ bool insertTH(Obj *table, Obj* obj) {
         }
     }
     
-    unsigned int index = hash(new_entry->key) % hashTable->length;
     new_entry->next = hashTable->entries[index];
     hashTable->entries[index] = new_entry;
     return true;

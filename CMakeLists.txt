@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.10)
 # Nombre del proyecto
 project(DataCore)
 
+# Habilitar optimización en modo Release
+set(CMAKE_C_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+
 # Establecer Clang como el compilador
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")

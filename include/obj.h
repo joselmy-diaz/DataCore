@@ -27,7 +27,9 @@ typedef enum {
   TYPE_HASH_TABLE = 10,
   TYPE_FUNCTION = 11,
   TYPE_BUFFER = 12,
+  TYPE_USER_FUNCTION = 13,  // Función definida por usuario en bytecode
 } TypeObjs;
+
 
 typedef struct {
    ObjType type;
@@ -73,5 +75,13 @@ typedef struct {
   ObjR obj;
   Fun Fun;
 } ObjFun;
+
+// Función definida por usuario en bytecode
+typedef struct {
+  ObjR obj;
+  size_t bytecode_offset;   // Offset en el bytecode donde empieza la función
+  int param_count;           // Número de parámetros
+  char** param_names;        // Nombres de los parámetros (opcional)
+} ObjUserFunction;
 
 #endif
